@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+/* Design tokens (BRIEF §5). Extended in Phase 4. */
+:root {
+  --cs-accent: #6366f1;
+  --cs-radius-card: 16px;
+  --cs-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --cs-font-mono: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, monospace;
+
+  --cs-surface: rgb(255 255 255 / 0.72);
+  --cs-border: rgb(0 0 0 / 0.1);
+  --cs-text: #1d1d1f;
+  --cs-text-muted: #6e6e73;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --cs-surface: rgb(30 30 32 / 0.72);
+    --cs-border: rgb(255 255 255 / 0.12);
+    --cs-text: #f5f5f7;
+    --cs-text-muted: #a1a1a6;
+  }
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  font-family: var(--cs-font-sans);
+  font-size: 13px;
+  color: var(--cs-text);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  cursor: default;
+}
