@@ -82,16 +82,15 @@ pub fn read(max_image_bytes: usize) -> Snapshot {
             return snap;
         }
         unsafe {
-            if snap.has_type(&NSPasteboardTypeFileURL.to_string()) {
-                if let Some(items) = pb.pasteboardItems() {
-                    for item in items.iter() {
-                        if let Some(s) = item.stringForType(NSPasteboardTypeFileURL) {
-                            if let Ok(u) = url::Url::parse(&s.to_string()) {
-                                if let Ok(p) = u.to_file_path() {
-                                    snap.files.push(p.to_string_lossy().into_owned());
-                                }
-                            }
-                        }
+            if snap.has_type(&NSPasteboardTypeFileURL.to_string())
+                && let Some(items) = pb.pasteboardItems()
+            {
+                for item in items.iter() {
+                    if let Some(s) = item.stringForType(NSPasteboardTypeFileURL)
+                        && let Ok(u) = url::Url::parse(&s.to_string())
+                        && let Ok(p) = u.to_file_path()
+                    {
+                        snap.files.push(p.to_string_lossy().into_owned());
                     }
                 }
             }
@@ -113,10 +112,10 @@ pub fn read(max_image_bytes: usize) -> Snapshot {
                 ];
                 for (t, fmt) in candidates {
                     if snap.has_type(&t.to_string()) {
-                        if let Some(d) = pb.dataForType(t) {
-                            if d.length() <= max_image_bytes {
-                                snap.image = Some((d.to_vec(), fmt));
-                            }
+                        if let Some(d) = pb.dataForType(t)
+                            && d.length() <= max_image_bytes
+                        {
+                            snap.image = Some((d.to_vec(), fmt));
                         }
                         break;
                     }

@@ -100,10 +100,10 @@ impl Settings {
             _ => unreachable!(),
         };
         for (k, v) in crate::db::queries::all_settings(conn)? {
-            if map.contains_key(&k) {
-                if let Ok(val) = serde_json::from_str(&v) {
-                    map.insert(k, val);
-                }
+            if map.contains_key(&k)
+                && let Ok(val) = serde_json::from_str(&v)
+            {
+                map.insert(k, val);
             }
         }
         // A single bad value must not reset everything: fall back per key.

@@ -28,3 +28,22 @@ Una riga per scelta non specificata nel brief: **scelta** — motivo.
 - **Rich text non salvato per elementi sensibili** — riduce le copie del segreto su disco.
 - **Tipi TS generati con `ts-rs`** in `src/lib/bindings/` eseguendo `cargo test` (i64 → `number` via `TS_RS_LARGE_INT`).
 - **Un'unica connessione SQLite dietro `Mutex`** (WAL) — query < 5 ms, nessun bisogno di pool.
+
+## Fasi 2–5 (implementate insieme: pannello, incolla e interfaccia dipendono l'una dall'altra)
+- **NSPanel via `tauri-nspanel` 2.1, stile `NonactivatingPanel`, livello 25 (status), `canJoinAllSpaces + fullScreenAuxiliary + ignoresCycle`** — diventa key (riceve la tastiera) senza attivare Clipstack: l'app in primo piano resta attiva e riceve il ⌘V.
+- **Chiusura al click fuori = evento `windowDidResignKey`.**
+- **Posizione calcolata in coordinate Cocoa sul `visibleFrame` dello schermo col cursore** (menu bar e Dock esclusi), margine 8 pt.
+- **Altezza pannello alto/basso = altezza card + 104 pt**; centro: max 900×580.
+- **Incolla: ritardo 70 ms tra chiusura pannello e ⌘V** (CGEvent HID, keycode 9).
+- **Senza permesso Accessibilità: copia + notifica macOS + banner "Attiva" nel pannello** — le notifiche di sistema non supportano pulsanti in modo affidabile con Tauri, quindi il pulsante per aprire le Impostazioni sta nel pannello e nelle Impostazioni.
+- **Incolla multiplo: testi uniti col separatore; file uniti; immagini escluse quando sono più di una** (non concatenabili).
+- **Undo eliminazione: buffer in memoria per 30 s** (le immagini restano su disco finché scade).
+- **Risultato delle azioni ⌘K: Invio = incolla (non salvato), ⌘Invio = salva come nuovo elemento.**
+- **Filtri della barra (`type:` `app:` `tag:` `space:` `date:` `pinned:`) diventano chip quando segue uno spazio o all'Invio; alias italiani (`tipo:immagine`, `date:oggi`).**
+- **Ricerca tag: il testo libero cerca anche nei nomi dei tag (prefisso).**
+- **Riordino Spaces: drag & drop nella sidebar (Framer Motion `Reorder`) e frecce nelle Impostazioni.**
+- **Card trascinabili sulla sidebar per spostarle in uno Space / tra i Fissati.**
+- **Trascinamento *fuori* dal pannello verso altre app: non implementato.** Il drag HTML5 di WKWebView non produce file/immagini per le altre app e il plugin nativo di drag richiederebbe di avviare una sessione AppKit dal pannello non attivante: troppo fragile (il brief consente di saltarlo). Alternativa: "Mostra nel Finder" dal menu contestuale.
+- **Impostazioni e onboarding in finestre separate create al bisogno** (vibrancy Sidebar, titlebar trasparente); il pannello resta sempre caricato e viene solo mostrato/nascosto.
+- **`preview.html` + `src/dev/preview.tsx`: anteprima di design solo per sviluppo con backend simulato** (non inclusa nella build). Usata per verificare l'aspetto con Chrome headless.
+- **`CLIPSTACK_SHOW_PANEL=1` mostra il pannello all'avvio solo nelle build di debug** (verifica senza tastiera).

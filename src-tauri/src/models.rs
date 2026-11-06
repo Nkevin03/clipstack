@@ -41,10 +41,6 @@ impl Kind {
             _ => return None,
         })
     }
-    /// Kinds whose payload is (primarily) text.
-    pub fn is_textual(self) -> bool {
-        !matches!(self, Kind::Image | Kind::File)
-    }
 }
 
 /// Application that owned the clipboard at copy time.

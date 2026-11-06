@@ -57,6 +57,9 @@ pub fn save_app_icon(pid: i32, bundle_id: &str, dir: &Path) -> Option<PathBuf> {
     Some(path)
 }
 
+/// Pixel count and summed R, G, B of a colour bucket.
+type Acc = (u32, u64, u64, u64);
+
 /// Dominant, reasonably saturated colour of an image, as `#RRGGBB`.
 /// Transparent and near-grey pixels are ignored unless the image has nothing else.
 pub fn dominant_color(png: &[u8]) -> Option<String> {
@@ -64,8 +67,7 @@ pub fn dominant_color(png: &[u8]) -> Option<String> {
         .ok()?
         .thumbnail(32, 32)
         .to_rgba8();
-    let mut buckets: std::collections::HashMap<(u8, u8, u8), (u32, u64, u64, u64)> =
-        Default::default();
+    let mut buckets: std::collections::HashMap<(u8, u8, u8), Acc> = Default::default();
     let mut grey: (u32, u64, u64, u64) = (0, 0, 0, 0);
     for p in img.pixels() {
         let [r, g, b, a] = p.0;

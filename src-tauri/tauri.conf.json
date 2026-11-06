@@ -15,15 +15,16 @@
       {
         "label": "panel",
         "title": "Clipstack",
-        "width": 900,
-        "height": 340,
+        "width": 1200,
+        "height": 354,
         "resizable": false,
         "decorations": false,
         "transparent": true,
-        "alwaysOnTop": true,
         "skipTaskbar": true,
-        "center": true,
-        "visible": true
+        "center": false,
+        "visible": false,
+        "acceptFirstMouse": true,
+        "shadow": false
       }
     ],
     "security": {

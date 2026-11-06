@@ -219,10 +219,10 @@ pub fn guess_language(text: &str) -> Option<&'static str> {
 
 fn guess_language_hits(text: &str) -> Option<(&'static str, usize)> {
     let t = text.trim();
-    if (t.starts_with('{') && t.ends_with('}')) || (t.starts_with('[') && t.ends_with(']')) {
-        if serde_json::from_str::<serde_json::Value>(t).is_ok() {
-            return Some(("json", 10));
-        }
+    if ((t.starts_with('{') && t.ends_with('}')) || (t.starts_with('[') && t.ends_with(']')))
+        && serde_json::from_str::<serde_json::Value>(t).is_ok()
+    {
+        return Some(("json", 10));
     }
     if t.starts_with("<!DOCTYPE html") || t.starts_with("<html") {
         return Some(("html", 10));

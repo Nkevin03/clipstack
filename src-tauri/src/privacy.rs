@@ -59,7 +59,7 @@ pub fn luhn_valid(digits: &str) -> bool {
             }
         })
         .sum();
-    sum % 10 == 0
+    sum.is_multiple_of(10)
 }
 
 pub fn iban_valid(candidate: &str) -> bool {

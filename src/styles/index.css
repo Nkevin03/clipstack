@@ -1,25 +1,88 @@
 @import "tailwindcss";
 
-/* Design tokens (BRIEF §5). Extended in Phase 4. */
+/* ------------------------------------------------------------------------------------------
+   Design tokens (BRIEF §5). Theme is resolved on <html data-theme="light|dark">; the accent
+   colour is injected at runtime as --cs-accent.
+   ------------------------------------------------------------------------------------------ */
 :root {
   --cs-accent: #6366f1;
-  --cs-radius-card: 16px;
+  --cs-accent-soft: color-mix(in srgb, var(--cs-accent) 18%, transparent);
+  --cs-accent-text: #ffffff;
+
   --cs-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
   --cs-font-mono: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, monospace;
+  --cs-text-base: 13px;
+  --cs-text-small: 11px;
 
-  --cs-surface: rgb(255 255 255 / 0.72);
-  --cs-border: rgb(0 0 0 / 0.1);
-  --cs-text: #1d1d1f;
-  --cs-text-muted: #6e6e73;
+  --cs-radius-panel: 16px;
+  --cs-radius-card: 16px;
+  --cs-radius-control: 8px;
+
+  --cs-card-w: 230px;
+  --cs-card-h: 250px;
+  --cs-card-gap: 14px;
+  --cs-card-header: 38px;
+
+  --cs-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --cs-surface: rgb(30 30 32 / 0.72);
-    --cs-border: rgb(255 255 255 / 0.12);
-    --cs-text: #f5f5f7;
-    --cs-text-muted: #a1a1a6;
-  }
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --cs-panel-tint: rgb(246 246 248 / 0.55);
+  --cs-panel-border: rgb(0 0 0 / 0.12);
+  --cs-surface: rgb(255 255 255 / 0.92);
+  --cs-surface-2: rgb(255 255 255 / 0.6);
+  --cs-surface-hover: rgb(0 0 0 / 0.05);
+  --cs-surface-active: rgb(0 0 0 / 0.08);
+  --cs-field: rgb(0 0 0 / 0.06);
+  --cs-border: rgb(0 0 0 / 0.08);
+  --cs-border-strong: rgb(0 0 0 / 0.16);
+  --cs-text: #1d1d1f;
+  --cs-text-muted: #5f5f66;
+  --cs-text-faint: #8a8a91;
+  --cs-shadow-card: 0 1px 2px rgb(0 0 0 / 0.06), 0 6px 18px rgb(0 0 0 / 0.07);
+  --cs-shadow-pop: 0 10px 40px rgb(0 0 0 / 0.22), 0 0 0 0.5px rgb(0 0 0 / 0.12);
+  --cs-code-bg: #1e1f24;
+  --cs-code-text: #e6e6ea;
+  --cs-mark: color-mix(in srgb, #facc15 55%, transparent);
+  --cs-danger: #dc2626;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --cs-panel-tint: rgb(28 28 31 / 0.5);
+  --cs-panel-border: rgb(255 255 255 / 0.13);
+  --cs-surface: rgb(44 44 48 / 0.92);
+  --cs-surface-2: rgb(255 255 255 / 0.05);
+  --cs-surface-hover: rgb(255 255 255 / 0.07);
+  --cs-surface-active: rgb(255 255 255 / 0.11);
+  --cs-field: rgb(255 255 255 / 0.08);
+  --cs-border: rgb(255 255 255 / 0.08);
+  --cs-border-strong: rgb(255 255 255 / 0.16);
+  --cs-text: #f5f5f7;
+  --cs-text-muted: #b0b0b8;
+  --cs-text-faint: #85858d;
+  --cs-shadow-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 22px rgb(0 0 0 / 0.28);
+  --cs-shadow-pop: 0 12px 44px rgb(0 0 0 / 0.5), 0 0 0 0.5px rgb(255 255 255 / 0.14);
+  --cs-code-bg: #16171b;
+  --cs-code-text: #e6e6ea;
+  --cs-mark: color-mix(in srgb, #facc15 40%, transparent);
+  --cs-danger: #f87171;
+}
+
+[data-size="small"] {
+  --cs-card-w: 186px;
+  --cs-card-h: 200px;
+  --cs-card-header: 34px;
+}
+[data-size="large"] {
+  --cs-card-w: 272px;
+  --cs-card-h: 300px;
+}
+[data-density="compact"] {
+  --cs-card-gap: 9px;
+  --cs-text-base: 12px;
 }
 
 html,
@@ -29,9 +92,124 @@ body,
   margin: 0;
   background: transparent;
   font-family: var(--cs-font-sans);
-  font-size: 13px;
+  font-size: var(--cs-text-base);
   color: var(--cs-text);
   -webkit-font-smoothing: antialiased;
-  user-select: none;
   cursor: default;
+  overflow: hidden;
+}
+
+body {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+input,
+textarea,
+[contenteditable] {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+button {
+  cursor: default;
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--cs-accent);
+  outline-offset: 1px;
+}
+
+.cs-caps {
+  font-size: var(--cs-text-small);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cs-text-faint);
+}
+
+.cs-mono {
+  font-family: var(--cs-font-mono);
+}
+
+.cs-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.cs-scroll::-webkit-scrollbar-thumb {
+  background: var(--cs-border-strong);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.cs-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cs-noscrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+mark.cs-hit {
+  background: var(--cs-mark);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 1px;
+}
+
+.cs-checker {
+  background-color: #fff;
+  background-image: linear-gradient(45deg, #e5e5e5 25%, transparent 25%), linear-gradient(-45deg, #e5e5e5 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e5e5e5 75%), linear-gradient(-45deg, transparent 75%, #e5e5e5 75%);
+  background-size: 12px 12px;
+  background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+}
+
+/* Rich-text preview: keep it readable regardless of the source page styles. */
+.cs-rich {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--cs-text);
+  overflow: hidden;
+}
+.cs-rich * {
+  max-width: 100%;
+  background: transparent !important;
+  color: inherit !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.cs-rich b,
+.cs-rich strong {
+  font-weight: 650;
+}
+.cs-rich a {
+  color: var(--cs-accent) !important;
+  text-decoration: underline;
+}
+.cs-rich img {
+  display: none;
+}
+
+/* highlight.js token colours (theme-independent dark code surface) */
+.hljs-keyword, .hljs-selector-tag, .hljs-built_in, .hljs-meta .hljs-keyword { color: #c792ea; }
+.hljs-string, .hljs-attr-value, .hljs-template-string, .hljs-regexp { color: #a5d6a7; }
+.hljs-number, .hljs-literal { color: #f9ae58; }
+.hljs-comment, .hljs-quote { color: #7d8590; font-style: italic; }
+.hljs-title, .hljs-title.function_, .hljs-section { color: #82aaff; }
+.hljs-type, .hljs-title.class_, .hljs-class .hljs-title { color: #ffcb6b; }
+.hljs-attr, .hljs-attribute, .hljs-property, .hljs-variable { color: #89ddff; }
+.hljs-tag, .hljs-name, .hljs-selector-class, .hljs-selector-id { color: #f07178; }
+.hljs-meta, .hljs-symbol, .hljs-bullet { color: #ffcb6b; }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
