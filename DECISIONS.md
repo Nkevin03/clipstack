@@ -47,3 +47,19 @@ Una riga per scelta non specificata nel brief: **scelta** — motivo.
 - **Impostazioni e onboarding in finestre separate create al bisogno** (vibrancy Sidebar, titlebar trasparente); il pannello resta sempre caricato e viene solo mostrato/nascosto.
 - **`preview.html` + `src/dev/preview.tsx`: anteprima di design solo per sviluppo con backend simulato** (non inclusa nella build). Usata per verificare l'aspetto con Chrome headless.
 - **`CLIPSTACK_SHOW_PANEL=1` mostra il pannello all'avvio solo nelle build di debug** (verifica senza tastiera).
+
+## Fasi 6–8
+- **Pausa: stato in memoria (riparte attivo al riavvio)** — evita di dimenticare la registrazione spenta per sempre.
+- **Scadenze sensibili controllate ogni 60 s; pulizia completa (retention + file orfani) all'avvio e ogni ora**, in un thread dedicato.
+- **Cifratura: SQLCipher compilato con CommonCrypto (feature `bundled-sqlcipher`, niente OpenSSL)**; chiave casuale a 256 bit nel Portachiavi (`security-framework`, servizio `com.clipstack.app`). Attivazione/disattivazione con `sqlcipher_export` e scambio del file. Il formato viene riconosciuto dall'intestazione del file all'avvio.
+- **Export/Import: un unico `.zip` (`backup.json` + `images/`)**; l'import salta i contenuti già presenti (stesso hash) e unisce Spaces/tag per nome.
+- **App escluse: selettore file su `/Applications`, il bundle id si legge con `NSBundle`.**
+- **Avvio al login: `tauri-plugin-autostart` con LaunchAgent.**
+- **Notifica "copiato, premi ⌘V": `tauri-plugin-notification`** (in `tauri dev` macOS può non mostrarla perché il binario non è un bundle).
+- **Icona menu bar disegnata a runtime (template image 22 pt @2x)**, con variante "in pausa"; icona app generata proceduralmente (`examples/make_icon.rs`) — entrambe originali.
+- **OCR con Vision (`VNRecognizeTextRequest`, accurato, lingua automatica) in un thread per immagine**; il testo finisce in `ocr_text` e nella FTS. Attivo di default perché è tutto sul dispositivo.
+- **Titoli/favicon dei link: `ureq`, timeout 6 s, max 512 KB di HTML e 256 KB di icona**, solo con l'opzione attiva.
+- **Paginazione: prima gli id della pagina, poi le colonne** — offset 40.000 su 50.000 elementi da 41 a 16 ms.
+- **Log: stderr in sviluppo, `~/Library/Logs/Clipstack/clipstack.log` in release (rotazione a 2 MB), panic loggati.**
+- **Bundle firmato ad-hoc (`signingIdentity: "-"`)** — necessario su Apple Silicon; per distribuire serve Developer ID + notarizzazione (README).
+- **Finestre Impostazioni: conferme con il dialog nativo (`plugin-dialog` `ask`)**, perché `window.confirm` non è affidabile in WKWebView.
