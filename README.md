@@ -107,6 +107,15 @@ pnpm tauri build --target universal-apple-darwin
 # → src-tauri/target/universal-apple-darwin/release/bundle/dmg/Clipstack_0.1.0_universal.dmg
 ```
 
+Se la creazione del DMG fallisce con un errore AppleScript del Finder (succede quando sono montati
+vecchi volumi "Clipstack"), espelli i volumi oppure crea il DMG senza Finder:
+
+```bash
+B=src-tauri/target/universal-apple-darwin/release/bundle
+mkdir -p /tmp/dmgsrc && cp -R $B/macos/Clipstack.app /tmp/dmgsrc/ && ln -sf /Applications /tmp/dmgsrc/Applications
+hdiutil create -volname Clipstack -srcfolder /tmp/dmgsrc -ov -format UDZO $B/dmg/Clipstack_0.1.0_universal.dmg
+```
+
 ### Firma Developer ID e notarizzazione (opzionale, per distribuire)
 
 Serve un account Apple Developer (99 €/anno).
