@@ -100,6 +100,9 @@ function General() {
         <Field label={t("autoPaste")}>
           <Toggle label={t("autoPaste")} checked={settings.autoPaste} onChange={(v) => set("autoPaste", v)} />
         </Field>
+        <Field label={t("pasteStack")} hint={t("pasteStackHint")}>
+          <Toggle label={t("pasteStack")} checked={settings.pasteStack} onChange={(v) => set("pasteStack", v)} />
+        </Field>
         <Field label={t("moveToTop")}>
           <Toggle label={t("moveToTop")} checked={settings.moveToTopAfterPaste} onChange={(v) => set("moveToTopAfterPaste", v)} />
         </Field>

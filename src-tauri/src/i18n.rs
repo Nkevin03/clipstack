@@ -40,6 +40,13 @@ pub fn tr(lang: &str, key: &str) -> &'static str {
                 "Resume Recording"
             }
         }
+        "pasteStack" => {
+            if it {
+                "Incolla in sequenza"
+            } else {
+                "Paste in Sequence"
+            }
+        }
         "recent" => {
             if it {
                 "Elementi recenti"

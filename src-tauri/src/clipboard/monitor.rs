@@ -104,6 +104,8 @@ struct Monitor {
     app: AppHandle,
     state: Arc<AppState>,
     sources: HashMap<String, SourceApp>,
+    /// Id stored by the last `handle_change`, if it captured something.
+    last_captured: Option<i64>,
 }
 
 impl Monitor {
@@ -201,6 +203,7 @@ impl Monitor {
                     saved.source_app_name,
                     saved.byte_size
                 );
+                self.last_captured = Some(saved.id);
                 crate::hooks::after_capture(&self.app, &settings, &saved, inserted);
                 let _ = self.app.emit("clipboard:new-item", &saved);
             }
@@ -219,6 +222,7 @@ pub fn start(app: AppHandle) {
                 app,
                 state,
                 sources: HashMap::new(),
+                last_captured: None,
             };
             let mut last = pasteboard::change_count();
             loop {
@@ -232,9 +236,25 @@ pub fn start(app: AppHandle) {
                     continue; // our own write (paste) — avoid the loop
                 }
                 if m.state.paused.load(Ordering::SeqCst) {
+                    m.state
+                        .paste_stack
+                        .lock()
+                        .unwrap_or_else(|e| e.into_inner())
+                        .reset();
                     continue;
                 }
+                m.last_captured = None;
                 m.handle_change();
+                let mut stack = m
+                    .state
+                    .paste_stack
+                    .lock()
+                    .unwrap_or_else(|e| e.into_inner());
+                match m.last_captured {
+                    Some(id) => stack.on_capture(id, cc),
+                    // Pasteboard changed to something we did not store: no sequence.
+                    None => stack.reset(),
+                }
             }
         })
         .expect("spawn clipboard monitor");

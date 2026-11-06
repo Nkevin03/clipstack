@@ -384,6 +384,14 @@ pub fn set_setting(
     if matches!(key.as_str(), "layout" | "cardSize") {
         crate::panel::relayout(&app);
     }
+    if key == "pasteStack" {
+        state
+            .paste_stack
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .reset();
+        crate::tray::refresh(&app);
+    }
     if key == "language" {
         crate::tray::refresh(&app);
     }

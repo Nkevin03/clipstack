@@ -83,7 +83,7 @@ const settings: Settings = {
   shortcut: "CommandOrControl+Shift+V", pauseShortcut: null, layout: (params.get("layout") as Settings["layout"]) ?? "top",
   theme: params.get("theme") ?? "auto", language: params.get("lang") ?? "it", accent: "#6366F1", useSystemAccent: false,
   cardSize: params.get("size") ?? "medium", density: "comfortable", soundOnCopy: false, launchAtLogin: false, autoPaste: true,
-  moveToTopAfterPaste: true, multiSeparator: "newline", maxTextBytes: 1048576, maxImageBytes: 26214400, maxItems: 5000,
+  moveToTopAfterPaste: true, pasteStack: true, multiSeparator: "newline", maxTextBytes: 1048576, maxImageBytes: 26214400, maxItems: 5000,
   retentionDays: 90, sensitivePolicy: "expire", sensitiveExpireMinutes: 10, fetchLinkMeta: false, ocrEnabled: true,
   encryptDb: false, onboardingDone: true, sidebarCollapsed: params.get("sidebar") === "0",
 };

@@ -46,6 +46,8 @@ pub struct Settings {
     pub launch_at_login: bool,
     pub auto_paste: bool,
     pub move_to_top_after_paste: bool,
+    /// Copy A, B, C → ⌘V ⌘V ⌘V pastes C, B, A.
+    pub paste_stack: bool,
     /// "newline" | "space" | "comma" | "none"
     pub multi_separator: String,
     pub max_text_bytes: i64,
@@ -77,6 +79,7 @@ impl Default for Settings {
             launch_at_login: false,
             auto_paste: true,
             move_to_top_after_paste: true,
+            paste_stack: true,
             multi_separator: "newline".into(),
             max_text_bytes: 1024 * 1024,
             max_image_bytes: 25 * 1024 * 1024,

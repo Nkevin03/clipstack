@@ -132,6 +132,8 @@ export const en = {
   autoPaste: "Paste automatically into the previous app",
   autoPasteHint: "When off, items are only copied to the clipboard.",
   moveToTop: "Move item to the top after pasting",
+  pasteStack: "Paste in sequence",
+  pasteStackHint: "Copy several things in a row, then press ⌘V repeatedly: the last copy is pasted first, then the one before, and so on. Requires Accessibility.",
   separator: "Separator for multiple items",
   sepNewline: "New line",
   sepSpace: "Space",

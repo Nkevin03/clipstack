@@ -110,6 +110,12 @@ pub fn copy_ids(state: &AppState, ids: &[i64], plain: bool) -> anyhow::Result<()
     let data = build(&rows, plain, separator(&settings.multi_separator))?;
     let cc = pasteboard::write(&data);
     state.own_change_count.store(cc, Ordering::SeqCst);
+    // Pasting from Clipstack ends any copy sequence.
+    state
+        .paste_stack
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .reset();
     let db = state.db();
     for r in &rows {
         q::mark_used(&db, r.id, settings.move_to_top_after_paste)?;
@@ -153,6 +159,11 @@ pub fn paste_text(app: &AppHandle, text: &str) -> anyhow::Result<PasteOutcome> {
         ..Default::default()
     });
     state.own_change_count.store(cc, Ordering::SeqCst);
+    state
+        .paste_stack
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .reset();
     Ok(finish(app, &state))
 }
 

@@ -55,6 +55,12 @@ con l'app installata va dato a **Clipstack.app**.
 - [ ] `⇧→` ×2 poi `Invio` incolla 3 elementi uniti col separatore scelto.
 - [ ] Immagine e file: incollati come immagine / come file (Finder, Mail, Slack).
 
+### Incolla in sequenza
+- [ ] In TextEdit copia "uno", "due", "tre" (tre ⌘C separati), poi ⌘V ⌘V ⌘V → "tredueuno".
+- [ ] Quarto ⌘V → ripete "uno". Nuova copia "quattro", poi ⌘V → "quattro".
+- [ ] Copia "a", poi una password da un password manager, poi ⌘V ⌘V → incolla la password e poi di nuovo la password (nessuna sostituzione).
+- [ ] Disattiva "Incolla in sequenza" dalla menu bar: ⌘V ripetuto incolla sempre l'ultima copia.
+
 ### App a schermo intero, Spaces, più monitor
 - [ ] Safari a schermo intero: il pannello compare sopra l'app.
 - [ ] Cambiando Space di macOS il pannello compare nello Space corrente.

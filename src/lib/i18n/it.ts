@@ -121,6 +121,8 @@ export const it: Strings = {
   autoPaste: "Incolla automaticamente nell'app precedente",
   autoPasteHint: "Se disattivato, l'elemento viene solo copiato negli appunti.",
   moveToTop: "Sposta l'elemento in cima dopo l'incolla",
+  pasteStack: "Incolla in sequenza",
+  pasteStackHint: "Copia più cose di fila, poi premi ⌘V più volte: incolla prima l'ultima copia, poi la penultima e così via. Richiede Accessibilità.",
   separator: "Separatore per più elementi",
   sepNewline: "A capo",
   sepSpace: "Spazio",

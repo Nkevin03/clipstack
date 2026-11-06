@@ -10,6 +10,7 @@ mod models;
 mod ocr;
 mod panel;
 mod paste;
+mod paste_stack;
 mod permissions;
 mod platform;
 mod privacy;
@@ -123,6 +124,7 @@ pub fn run() {
                 undo: Mutex::new(None),
                 prev_app_pid: AtomicI32::new(0),
                 panel_visible: AtomicBool::new(false),
+                paste_stack: Mutex::new(paste_stack::PasteStack::default()),
             });
             app.manage(state.clone());
 
@@ -134,6 +136,7 @@ pub fn run() {
                 log::error!("{e}");
             }
             clipboard::monitor::start(handle.clone());
+            paste_stack::start(handle.clone());
             start_maintenance(state, handle.clone());
             if !onboarding_done {
                 windows::open_onboarding(&handle);

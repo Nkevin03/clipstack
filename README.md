@@ -45,6 +45,13 @@ Senza permesso l'elemento viene comunque copiato: premi tu ⌘V.
 | `Tab` / `⇧Tab` | Cambia Space |
 | `⌘B` · `⌘,` | Sidebar · Impostazioni |
 
+### Incolla in sequenza
+
+Copia più cose di fila (es. tre parole), poi in qualsiasi app premi **⌘V** più volte: incolla
+l'ultima copia, poi la penultima, poi la terzultima. Una nuova copia dopo un incolla fa ripartire la
+sequenza. Si attiva/disattiva dalla menu bar (**Incolla in sequenza**) o in Impostazioni → Generale.
+Richiede il permesso Accessibilità. Se lo disattivi, ⌘V ripetuto incolla sempre l'ultima copia.
+
 Filtri nella barra di ricerca: `type:image|link|text|rich|file|color|code`, `app:safari`,
 `tag:lavoro`, `space:snippets`, `date:today|yesterday|7d|24h|2w`, `pinned:yes|no`
 (anche in italiano: `tipo:immagine`, `date:oggi`…).

@@ -51,6 +51,7 @@ pub struct AppState {
     /// pid of the app that was frontmost when the panel opened (paste target).
     pub prev_app_pid: AtomicI32,
     pub panel_visible: AtomicBool,
+    pub paste_stack: Mutex<crate::paste_stack::PasteStack>,
 }
 
 impl AppState {

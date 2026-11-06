@@ -7,7 +7,7 @@ use crate::state::AppState;
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 use tauri::image::Image;
-use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
+use tauri::menu::{CheckMenuItem, Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::TrayIconBuilder;
 use tauri::{AppHandle, Emitter, Manager};
 
@@ -126,6 +126,14 @@ fn build_menu(app: &AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
         true,
         None::<&str>,
     )?)?;
+    menu.append(&CheckMenuItem::with_id(
+        app,
+        "paste-stack",
+        tr(lang, "pasteStack"),
+        true,
+        state.settings().paste_stack,
+        None::<&str>,
+    )?)?;
     menu.append(&PredefinedMenuItem::separator(app)?)?;
     menu.append(&MenuItem::with_id(
         app,
@@ -184,6 +192,7 @@ pub fn init(app: &AppHandle) -> tauri::Result<()> {
             match id {
                 "open" => crate::panel::show(app),
                 "pause" => toggle_pause(app),
+                "paste-stack" => toggle_paste_stack(app),
                 "settings" => crate::windows::open_settings(app, None),
                 "quit" => app.exit(0),
                 other => {
@@ -234,6 +243,25 @@ pub fn set_paused(app: &AppHandle, value: bool) {
     let state = app.state::<Arc<AppState>>();
     state.paused.store(value, Ordering::SeqCst);
     let _ = app.emit("monitoring:state", serde_json::json!({ "paused": value }));
+    refresh(app);
+}
+
+pub fn toggle_paste_stack(app: &AppHandle) {
+    let state = app.state::<Arc<AppState>>();
+    let value = !state.settings().paste_stack;
+    if let Ok(new) = state
+        .settings()
+        .with("pasteStack", serde_json::json!(value))
+    {
+        let _ = crate::settings::persist(&state.db(), "pasteStack", &serde_json::json!(value));
+        *state.settings.write().unwrap_or_else(|e| e.into_inner()) = new.clone();
+        state
+            .paste_stack
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .reset();
+        let _ = app.emit("settings:changed", &new);
+    }
     refresh(app);
 }
 

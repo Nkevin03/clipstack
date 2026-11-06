@@ -63,3 +63,10 @@ Una riga per scelta non specificata nel brief: **scelta** — motivo.
 - **Log: stderr in sviluppo, `~/Library/Logs/Clipstack/clipstack.log` in release (rotazione a 2 MB), panic loggati.**
 - **Bundle firmato ad-hoc (`signingIdentity: "-"`)** — necessario su Apple Silicon; per distribuire serve Developer ID + notarizzazione (README).
 - **Finestre Impostazioni: conferme con il dialog nativo (`plugin-dialog` `ask`)**, perché `window.confirm` non è affidabile in WKWebView.
+
+## Incolla in sequenza (richiesta successiva)
+- **Pila LIFO delle copie consecutive; ⌘V in un'altra app → al rilascio del tasto (+60 ms) negli appunti va l'elemento precedente.** Rilevato con `NSEvent` global monitor (KeyDown/KeyUp, solo ⌘V senza altri modificatori, ripetizioni ignorate), installato appena c'è il permesso Accessibilità.
+- **Attivo di default (richiesta esplicita), disattivabile da menu bar e Impostazioni.** Effetto collaterale voluto: con la funzione attiva, premere ⌘V due volte dopo aver copiato più cose non ripete lo stesso elemento.
+- **La sequenza si chiude al primo ⌘V; una nuova copia dopo un incolla ne inizia una nuova.** A pila esaurita resta negli appunti l'ultimo elemento incollato.
+- **Sicurezza: nessuna sostituzione se il `changeCount` degli appunti non è quello atteso** (copia non salvata, password/concealed, app esclusa, pausa, altri strumenti) o se il pannello è aperto; incollare dal pannello azzera la sequenza.
+- **Le sostituzioni non spostano gli elementi in cima né li ricatturano** (stesso meccanismo anti-loop del `changeCount`).

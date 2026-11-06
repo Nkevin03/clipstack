@@ -20,6 +20,10 @@ cardSize: string,
  */
 density: string, soundOnCopy: boolean, launchAtLogin: boolean, autoPaste: boolean, moveToTopAfterPaste: boolean, 
 /**
+ * Copy A, B, C → ⌘V ⌘V ⌘V pastes C, B, A.
+ */
+pasteStack: boolean, 
+/**
  * "newline" | "space" | "comma" | "none"
  */
 multiSeparator: string, maxTextBytes: number, maxImageBytes: number, maxItems: number, retentionDays: number, sensitivePolicy: SensitivePolicy, sensitiveExpireMinutes: number, fetchLinkMeta: boolean, ocrEnabled: boolean, encryptDb: boolean, onboardingDone: boolean, sidebarCollapsed: boolean, };
