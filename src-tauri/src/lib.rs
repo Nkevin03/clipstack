@@ -4,6 +4,7 @@ mod commands;
 mod data;
 mod db;
 mod hooks;
+mod hud;
 mod i18n;
 mod linkmeta;
 mod models;
@@ -136,12 +137,19 @@ pub fn run() {
                 log::error!("{e}");
             }
             clipboard::monitor::start(handle.clone());
-            paste_stack::start(handle.clone());
             start_maintenance(state, handle.clone());
             if !onboarding_done {
                 windows::open_onboarding(&handle);
             }
             // Development aid: show the panel at startup (debug builds only).
+            #[cfg(debug_assertions)]
+            if std::env::var("CLIPSTACK_START_SEQUENCE").is_ok() {
+                let h = handle.clone();
+                std::thread::spawn(move || {
+                    std::thread::sleep(Duration::from_millis(1500));
+                    paste_stack::start_session(&h);
+                });
+            }
             #[cfg(debug_assertions)]
             if std::env::var("CLIPSTACK_SHOW_PANEL").is_ok() {
                 let h = handle.clone();
@@ -199,6 +207,10 @@ pub fn run() {
             commands::file_icon,
             commands::system_accent,
             commands::app_info,
+            commands::toggle_sequence,
+            commands::stop_sequence,
+            commands::sequence_state,
+            commands::resize_hud,
         ])
         .build(tauri::generate_context!())
         .expect("error while building Clipstack")

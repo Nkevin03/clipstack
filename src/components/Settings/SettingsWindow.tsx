@@ -100,9 +100,6 @@ function General() {
         <Field label={t("autoPaste")}>
           <Toggle label={t("autoPaste")} checked={settings.autoPaste} onChange={(v) => set("autoPaste", v)} />
         </Field>
-        <Field label={t("pasteStack")} hint={t("pasteStackHint")}>
-          <Toggle label={t("pasteStack")} checked={settings.pasteStack} onChange={(v) => set("pasteStack", v)} />
-        </Field>
         <Field label={t("moveToTop")}>
           <Toggle label={t("moveToTop")} checked={settings.moveToTopAfterPaste} onChange={(v) => set("moveToTopAfterPaste", v)} />
         </Field>
@@ -164,6 +161,9 @@ function Shortcuts() {
       <Section hint={settings.shortcut === "CommandOrControl+Shift+V" ? t("shortcutConflict") : undefined}>
         <Field label={t("openPanelShortcut")}>
           <ShortcutRecorder value={settings.shortcut} onChange={(v) => (v ? set("shortcut", v) : undefined)} />
+        </Field>
+        <Field label={t("sequenceShortcut")} hint={t("sequenceHint")}>
+          <ShortcutRecorder value={settings.sequenceShortcut} allowClear onChange={(v) => set("sequenceShortcut", v)} />
         </Field>
         <Field label={t("pauseShortcut")}>
           <ShortcutRecorder value={settings.pauseShortcut} allowClear onChange={(v) => set("pauseShortcut", v)} />

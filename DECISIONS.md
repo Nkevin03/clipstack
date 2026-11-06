@@ -70,3 +70,12 @@ Una riga per scelta non specificata nel brief: **scelta** — motivo.
 - **La sequenza si chiude al primo ⌘V; una nuova copia dopo un incolla ne inizia una nuova.** A pila esaurita resta negli appunti l'ultimo elemento incollato.
 - **Sicurezza: nessuna sostituzione se il `changeCount` degli appunti non è quello atteso** (copia non salvata, password/concealed, app esclusa, pausa, altri strumenti) o se il pannello è aperto; incollare dal pannello azzera la sequenza.
 - **Le sostituzioni non spostano gli elementi in cima né li ricatturano** (stesso meccanismo anti-loop del `changeCount`).
+
+## Sequenza di copia con scorciatoia e HUD (richiesta successiva)
+- **La sequenza non è più sempre attiva: è una sessione avviata/terminata con una scorciatoia globale (default ⌥⇧⌘C, scelta poco usata dalle app), dalla menu bar o dalla × del mini-pannello.** Sostituisce l'impostazione "Incolla in sequenza" sempre attiva.
+- **Durante la sessione ogni copia va in cima alla pila (anche dopo un incolla); ⌘V consuma la cima.** A pila vuota la sessione termina da sola dopo aver mostrato "Sequenza completata" per 1,4 s.
+- **Copie non registrate (password, app escluse, pausa, incolla dal pannello) non svuotano la pila: sospendono solo la sostituzione fino alla copia successiva.**
+- **HUD = secondo NSPanel (`hud.rs`) che non diventa mai key**: non ruba focus né tastiera; appare in alto a destra dello schermo col cursore, su tutti gli Spaces e sopra il full-screen; l'altezza segue il contenuto (ResizeObserver → `resize_hud`). Mostra fino a 7 elementi + "+N altri", con miniature per immagini/colori.
+- **La WebView del HUD viene creata al primo uso e poi solo nascosta** (apertura istantanea le volte successive; ~30 MB in più solo dopo il primo utilizzo).
+- **Se manca l'Accessibilità all'avvio della sessione: richiesta di sistema + avviso nel HUD; il monitor ⌘V si installa appena il permesso arriva.**
+- **`CLIPSTACK_START_SEQUENCE=1` avvia una sessione all'avvio solo nelle build di debug** (verifica del HUD).

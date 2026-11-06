@@ -5,7 +5,8 @@
   "windows": [
     "panel",
     "settings",
-    "onboarding"
+    "onboarding",
+    "hud"
   ],
   "permissions": [
     "core:default",

@@ -28,3 +28,18 @@ describe("format", () => {
     expect(bytes(1536)).toBe("1.5 KB");
   });
 });
+
+import { prettyShortcut, toAccelerator } from "../components/Settings/ShortcutRecorder";
+
+describe("shortcuts", () => {
+  it("pretty-prints in Apple modifier order", () => {
+    expect(prettyShortcut("CommandOrControl+Alt+Shift+C")).toBe("⌥⇧⌘C");
+    expect(prettyShortcut("CommandOrControl+Shift+V")).toBe("⇧⌘V");
+    expect(prettyShortcut(null)).toBe("—");
+  });
+  it("converts key events to accelerators", () => {
+    const ev = { metaKey: true, ctrlKey: false, altKey: true, shiftKey: true, code: "KeyC" } as KeyboardEvent;
+    expect(toAccelerator(ev)).toBe("CommandOrControl+Alt+Shift+C");
+    expect(toAccelerator({ ...ev, metaKey: false, altKey: false, shiftKey: false } as KeyboardEvent)).toBeNull();
+  });
+});

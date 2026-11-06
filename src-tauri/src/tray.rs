@@ -128,10 +128,22 @@ fn build_menu(app: &AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
     )?)?;
     menu.append(&CheckMenuItem::with_id(
         app,
-        "paste-stack",
-        tr(lang, "pasteStack"),
+        "sequence",
+        match state
+            .settings()
+            .sequence_shortcut
+            .as_deref()
+            .filter(|s| !s.is_empty())
+        {
+            Some(acc) => format!(
+                "{}  {}",
+                tr(lang, "pasteStack"),
+                crate::i18n::pretty_shortcut(acc)
+            ),
+            None => tr(lang, "pasteStack").to_string(),
+        },
         true,
-        state.settings().paste_stack,
+        crate::paste_stack::lock(&state).is_active(),
         None::<&str>,
     )?)?;
     menu.append(&PredefinedMenuItem::separator(app)?)?;
@@ -192,7 +204,7 @@ pub fn init(app: &AppHandle) -> tauri::Result<()> {
             match id {
                 "open" => crate::panel::show(app),
                 "pause" => toggle_pause(app),
-                "paste-stack" => toggle_paste_stack(app),
+                "sequence" => crate::paste_stack::toggle_session(app),
                 "settings" => crate::windows::open_settings(app, None),
                 "quit" => app.exit(0),
                 other => {
@@ -243,25 +255,6 @@ pub fn set_paused(app: &AppHandle, value: bool) {
     let state = app.state::<Arc<AppState>>();
     state.paused.store(value, Ordering::SeqCst);
     let _ = app.emit("monitoring:state", serde_json::json!({ "paused": value }));
-    refresh(app);
-}
-
-pub fn toggle_paste_stack(app: &AppHandle) {
-    let state = app.state::<Arc<AppState>>();
-    let value = !state.settings().paste_stack;
-    if let Ok(new) = state
-        .settings()
-        .with("pasteStack", serde_json::json!(value))
-    {
-        let _ = crate::settings::persist(&state.db(), "pasteStack", &serde_json::json!(value));
-        *state.settings.write().unwrap_or_else(|e| e.into_inner()) = new.clone();
-        state
-            .paste_stack
-            .lock()
-            .unwrap_or_else(|e| e.into_inner())
-            .reset();
-        let _ = app.emit("settings:changed", &new);
-    }
     refresh(app);
 }
 

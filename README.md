@@ -30,6 +30,7 @@ Senza permesso l'elemento viene comunque copiato: premi tu ⌘V.
 | Tasto | Azione |
 |---|---|
 | `⌘⇧V` (globale, modificabile) | Apri/chiudi pannello |
+| `⌥⇧⌘C` (globale, modificabile) | Avvia/termina sequenza di copia |
 | `←` `→` / `↑` `↓` | Naviga |
 | `Invio` / doppio click | Incolla |
 | `⇧Invio` | Incolla come testo semplice |
@@ -45,12 +46,15 @@ Senza permesso l'elemento viene comunque copiato: premi tu ⌘V.
 | `Tab` / `⇧Tab` | Cambia Space |
 | `⌘B` · `⌘,` | Sidebar · Impostazioni |
 
-### Incolla in sequenza
+### Sequenza di copia
 
-Copia più cose di fila (es. tre parole), poi in qualsiasi app premi **⌘V** più volte: incolla
-l'ultima copia, poi la penultima, poi la terzultima. Una nuova copia dopo un incolla fa ripartire la
-sequenza. Si attiva/disattiva dalla menu bar (**Incolla in sequenza**) o in Impostazioni → Generale.
-Richiede il permesso Accessibilità. Se lo disattivi, ⌘V ripetuto incolla sempre l'ultima copia.
+1. Premi **⌥⇧⌘C** (modificabile in Impostazioni → Scorciatoie, oppure dalla menu bar → *Sequenza di copia*).
+2. In alto a destra compare un piccolo pannello: ogni cosa che copi si impila lì in diretta.
+3. In qualsiasi app premi **⌘V** più volte: incolla l'ultima copia, poi la penultima, poi la terzultima…
+   l'elemento incollato sparisce dalla pila.
+4. Quando la pila è vuota la sequenza si chiude da sola; altrimenti premi di nuovo la scorciatoia o la ×.
+
+Richiede il permesso Accessibilità (per accorgersi dei tuoi ⌘V). Fuori dalla sequenza ⌘V funziona normalmente.
 
 Filtri nella barra di ricerca: `type:image|link|text|rich|file|color|code`, `app:safari`,
 `tag:lavoro`, `space:snippets`, `date:today|yesterday|7d|24h|2w`, `pinned:yes|no`

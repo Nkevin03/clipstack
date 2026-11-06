@@ -80,15 +80,16 @@ const tags: Tag[] = [
 ];
 const sourceApps: SourceAppInfo[] = Object.entries(apps).map(([bundleId, a], i) => ({ bundleId, name: a.name, color: a.color, iconPath: a.icon, count: 10 - i, lastSeen: now - i * 1000 }));
 const settings: Settings = {
-  shortcut: "CommandOrControl+Shift+V", pauseShortcut: null, layout: (params.get("layout") as Settings["layout"]) ?? "top",
+  shortcut: "CommandOrControl+Shift+V", pauseShortcut: null, sequenceShortcut: "CommandOrControl+Alt+Shift+C", layout: (params.get("layout") as Settings["layout"]) ?? "top",
   theme: params.get("theme") ?? "auto", language: params.get("lang") ?? "it", accent: "#6366F1", useSystemAccent: false,
   cardSize: params.get("size") ?? "medium", density: "comfortable", soundOnCopy: false, launchAtLogin: false, autoPaste: true,
-  moveToTopAfterPaste: true, pasteStack: true, multiSeparator: "newline", maxTextBytes: 1048576, maxImageBytes: 26214400, maxItems: 5000,
+  moveToTopAfterPaste: true, multiSeparator: "newline", maxTextBytes: 1048576, maxImageBytes: 26214400, maxItems: 5000,
   retentionDays: 90, sensitivePolicy: "expire", sensitiveExpireMinutes: 10, fetchLinkMeta: false, ocrEnabled: true,
   encryptDb: false, onboardingDone: true, sidebarCollapsed: params.get("sidebar") === "0",
 };
 
 const win = params.get("window") ?? "panel";
+if (win === "hud") document.body.style.background = "#9aa3b5";
 mockWindows(win);
 mockIPC(
   (cmd, args) => {
@@ -113,6 +114,10 @@ mockIPC(
       case "list_excluded_apps": return [{ bundleId: "com.1password.1password", name: "1Password" }, { bundleId: "com.bitwarden.desktop", name: "Bitwarden" }];
       case "app_info": return { version: "0.1.0", dataDir: "~/Library/Application Support/com.clipstack.app", encrypted: false, accessibility: true, systemLanguage: "it" };
       case "file_icon": return null;
+      case "sequence_state": {
+        const n = Number(params.get("seq") ?? 3);
+        return { active: true, items: n < 0 ? [] : [items[0], items[4], items[3], items[2], items[7]].slice(0, n), pasted: 0, finished: params.get("seqdone") === "1", accessibility: params.get("ax") !== "0" };
+      }
       case "run_action": return { text: String(items[2].preview).toUpperCase(), stats: { chars: 120, charsNoSpaces: 98, words: 20, lines: 7 }, newItemId: null };
       default: return null;
     }
@@ -126,10 +131,11 @@ const { useUi } = await import("../store/ui");
 const { useItems } = await import("../store/items");
 if (win === "settings") location.hash = `/settings/${params.get("section") ?? "general"}`;
 if (win === "onboarding") location.hash = "/onboarding";
+if (win === "hud") location.hash = "/hud";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <div style={{ position: "fixed", inset: win === "panel" ? 8 : 0, background: win === "panel" ? "rgb(40 40 46 / 0.25)" : undefined, backdropFilter: "blur(30px)", borderRadius: 16 }}>
+    <div style={{ position: win === "hud" ? "relative" : "fixed", width: win === "hud" ? 300 : undefined, margin: win === "hud" ? 12 : undefined, inset: win === "panel" ? 8 : 0, background: win === "panel" ? "rgb(40 40 46 / 0.25)" : undefined, backdropFilter: "blur(30px)", borderRadius: 16 }}>
       <App />
     </div>
   </React.StrictMode>,

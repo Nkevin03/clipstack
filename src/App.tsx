@@ -3,6 +3,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Panel } from "./components/Panel";
 import { SettingsWindow } from "./components/Settings/SettingsWindow";
 import { Onboarding } from "./components/Onboarding/Onboarding";
+import { Hud } from "./components/Hud/Hud";
 import { accentOf, useSettings } from "./store/settings";
 import { useItems } from "./store/items";
 import { useUi } from "./store/ui";
@@ -84,6 +85,7 @@ export default function App() {
   useTauriEvent("paste:needs-permission", () => useUi.getState().setAccessibility(false));
 
   if (!ready) return null;
+  if (label === "hud" || route.startsWith("/hud")) return <Hud />;
   if (label === "settings" || route.startsWith("/settings")) return <SettingsWindow initial={route.split("/")[2] ?? "general"} />;
   if (label === "onboarding" || route.startsWith("/onboarding")) return <Onboarding />;
   return <Panel />;

@@ -344,7 +344,7 @@ pub fn set_setting(
     let old = state.settings();
     let new = old.with(&key, value.clone()).map_err(err)?;
     match key.as_str() {
-        "shortcut" | "pauseShortcut" => {
+        "shortcut" | "pauseShortcut" | "sequenceShortcut" => {
             if let Some(acc) = value.as_str().filter(|s| !s.is_empty()) {
                 crate::shortcuts::parse(acc)?;
             }
@@ -364,8 +364,10 @@ pub fn set_setting(
     }
     crate::settings::persist(&state.db(), &key, &value).map_err(err)?;
     *state.settings.write().unwrap_or_else(|e| e.into_inner()) = new.clone();
-    if (key == "shortcut" || key == "pauseShortcut")
-        && let Err(e) = crate::shortcuts::register_all(&app)
+    if matches!(
+        key.as_str(),
+        "shortcut" | "pauseShortcut" | "sequenceShortcut"
+    ) && let Err(e) = crate::shortcuts::register_all(&app)
     {
         // Roll back to the previous working shortcut.
         let _ = crate::settings::persist(
@@ -373,7 +375,8 @@ pub fn set_setting(
             &key,
             &serde_json::to_value(match key.as_str() {
                 "shortcut" => serde_json::json!(old.shortcut),
-                _ => serde_json::json!(old.pause_shortcut),
+                "pauseShortcut" => serde_json::json!(old.pause_shortcut),
+                _ => serde_json::json!(old.sequence_shortcut),
             })
             .unwrap(),
         );
@@ -384,12 +387,7 @@ pub fn set_setting(
     if matches!(key.as_str(), "layout" | "cardSize") {
         crate::panel::relayout(&app);
     }
-    if key == "pasteStack" {
-        state
-            .paste_stack
-            .lock()
-            .unwrap_or_else(|e| e.into_inner())
-            .reset();
+    if key == "sequenceShortcut" {
         crate::tray::refresh(&app);
     }
     if key == "language" {
@@ -602,4 +600,26 @@ pub fn app_info(app: AppHandle, state: St) -> AppInfo {
         accessibility: crate::permissions::is_trusted(),
         system_language: crate::platform::system_language().into(),
     }
+}
+
+// ---- copy sequence ----------------------------------------------------------------------------
+
+#[tauri::command]
+pub fn toggle_sequence(app: AppHandle) {
+    crate::paste_stack::toggle_session(&app);
+}
+
+#[tauri::command]
+pub fn stop_sequence(app: AppHandle) {
+    crate::paste_stack::stop_session(&app);
+}
+
+#[tauri::command]
+pub fn sequence_state(state: St) -> crate::paste_stack::SequenceState {
+    crate::paste_stack::snapshot(&state, false)
+}
+
+#[tauri::command]
+pub fn resize_hud(app: AppHandle, height: f64) {
+    crate::hud::resize(&app, height);
 }

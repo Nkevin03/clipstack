@@ -34,7 +34,7 @@ Profilazione misurata (MacBook Apple Silicon, `--release`, 50.000 elementi):
 `pnpm dev`, poi apri `http://localhost:1420/preview.html` con parametri:
 `layout=top|bottom|center`, `theme=light|dark`, `lang=it|en`, `size=small|medium|large`,
 `sidebar=0`, `paused=1`, `ax=0` (banner permesso), `modal=context|tags|actions|preview|toast`,
-`window=settings&section=privacy`, `window=onboarding`.
+`window=settings&section=privacy`, `window=onboarding`, `window=hud&seq=0..5&seqdone=1`.
 
 ## Checklist manuale
 
@@ -55,11 +55,14 @@ con l'app installata va dato a **Clipstack.app**.
 - [ ] `⇧→` ×2 poi `Invio` incolla 3 elementi uniti col separatore scelto.
 - [ ] Immagine e file: incollati come immagine / come file (Finder, Mail, Slack).
 
-### Incolla in sequenza
-- [ ] In TextEdit copia "uno", "due", "tre" (tre ⌘C separati), poi ⌘V ⌘V ⌘V → "tredueuno".
-- [ ] Quarto ⌘V → ripete "uno". Nuova copia "quattro", poi ⌘V → "quattro".
-- [ ] Copia "a", poi una password da un password manager, poi ⌘V ⌘V → incolla la password e poi di nuovo la password (nessuna sostituzione).
-- [ ] Disattiva "Incolla in sequenza" dalla menu bar: ⌘V ripetuto incolla sempre l'ultima copia.
+### Sequenza di copia
+- [ ] ⌥⇧⌘C: compare il mini-pannello in alto a destra ("Copia qualcosa…"), il focus resta nell'app corrente.
+- [ ] In TextEdit copia "uno", "due", "tre": il mini-pannello li mostra in diretta, "tre" in cima con il badge ⌘V.
+- [ ] ⌘V ⌘V ⌘V → "tredueuno"; ogni elemento incollato sparisce dalla pila; alla fine "Sequenza completata" e il pannello si chiude.
+- [ ] Durante la sequenza copia "a", incolla, copia "b": "b" va in cima, poi ⌘V incolla "b" e poi il resto.
+- [ ] Copia una password da un password manager durante la sequenza: ⌘V incolla la password, la pila resta invariata.
+- [ ] ⌥⇧⌘C di nuovo (o la ×, o la voce in menu bar) termina la sequenza; fuori sequenza ⌘V ripetuto incolla sempre lo stesso elemento.
+- [ ] Cambia la scorciatoia in Impostazioni → Scorciatoie: la nuova funziona e compare nel menu bar e nel mini-pannello.
 
 ### App a schermo intero, Spaces, più monitor
 - [ ] Safari a schermo intero: il pannello compare sopra l'app.

@@ -5,10 +5,13 @@ const SYMBOL: Record<string, string> = { CommandOrControl: "⌘", Command: "⌘"
 
 export function prettyShortcut(acc: string | null | undefined): string {
   if (!acc) return "—";
-  return acc
-    .split("+")
-    .map((p) => SYMBOL[p] ?? (p.startsWith("Key") ? p.slice(3) : p.startsWith("Digit") ? p.slice(5) : p))
-    .join("");
+  const parts = acc.split("+");
+  const key = parts[parts.length - 1];
+  const mods = new Set(parts.slice(0, -1).map((p) => SYMBOL[p] ?? p));
+  // Apple order: ⌃ ⌥ ⇧ ⌘
+  const ordered = ["⌃", "⌥", "⇧", "⌘"].filter((m) => mods.has(m)).join("");
+  const k = SYMBOL[key] ?? (key.startsWith("Key") ? key.slice(3) : key.startsWith("Digit") ? key.slice(5) : key);
+  return ordered + k;
 }
 
 /** KeyboardEvent → Tauri accelerator (`CommandOrControl+Shift+V`). Requires a modifier. */

@@ -2,7 +2,11 @@
 import type { Layout } from "./Layout";
 import type { SensitivePolicy } from "./SensitivePolicy";
 
-export type Settings = { shortcut: string, pauseShortcut: string | null, layout: Layout, 
+export type Settings = { shortcut: string, pauseShortcut: string | null, 
+/**
+ * Starts/stops a copy sequence (copy A, B, C → ⌘V ⌘V ⌘V pastes C, B, A).
+ */
+sequenceShortcut: string | null, layout: Layout, 
 /**
  * "auto" | "light" | "dark"
  */
@@ -19,10 +23,6 @@ cardSize: string,
  * "comfortable" | "compact"
  */
 density: string, soundOnCopy: boolean, launchAtLogin: boolean, autoPaste: boolean, moveToTopAfterPaste: boolean, 
-/**
- * Copy A, B, C → ⌘V ⌘V ⌘V pastes C, B, A.
- */
-pasteStack: boolean, 
 /**
  * "newline" | "space" | "comma" | "none"
  */

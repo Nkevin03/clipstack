@@ -31,6 +31,8 @@ pub enum SensitivePolicy {
 pub struct Settings {
     pub shortcut: String,
     pub pause_shortcut: Option<String>,
+    /// Starts/stops a copy sequence (copy A, B, C → ⌘V ⌘V ⌘V pastes C, B, A).
+    pub sequence_shortcut: Option<String>,
     pub layout: Layout,
     /// "auto" | "light" | "dark"
     pub theme: String,
@@ -46,8 +48,7 @@ pub struct Settings {
     pub launch_at_login: bool,
     pub auto_paste: bool,
     pub move_to_top_after_paste: bool,
-    /// Copy A, B, C → ⌘V ⌘V ⌘V pastes C, B, A.
-    pub paste_stack: bool,
+
     /// "newline" | "space" | "comma" | "none"
     pub multi_separator: String,
     pub max_text_bytes: i64,
@@ -68,6 +69,7 @@ impl Default for Settings {
         Settings {
             shortcut: "CommandOrControl+Shift+V".into(),
             pause_shortcut: None,
+            sequence_shortcut: Some("CommandOrControl+Alt+Shift+C".into()),
             layout: Layout::Top,
             theme: "auto".into(),
             language: "auto".into(),
@@ -79,7 +81,6 @@ impl Default for Settings {
             launch_at_login: false,
             auto_paste: true,
             move_to_top_after_paste: true,
-            paste_stack: true,
             multi_separator: "newline".into(),
             max_text_bytes: 1024 * 1024,
             max_image_bytes: 25 * 1024 * 1024,

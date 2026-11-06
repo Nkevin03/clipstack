@@ -42,9 +42,9 @@ pub fn tr(lang: &str, key: &str) -> &'static str {
         }
         "pasteStack" => {
             if it {
-                "Incolla in sequenza"
+                "Sequenza di copia"
             } else {
-                "Paste in Sequence"
+                "Copy Sequence"
             }
         }
         "recent" => {
@@ -123,4 +123,30 @@ pub fn tr(lang: &str, key: &str) -> &'static str {
 
 pub fn t(app: &AppHandle, key: &str) -> String {
     tr(lang(app), key).to_string()
+}
+
+/// `CommandOrControl+Alt+Shift+C` → `⌥⇧⌘C` (menu labels).
+pub fn pretty_shortcut(acc: &str) -> String {
+    let mut mods = String::new();
+    let mut key = String::new();
+    let parts: Vec<&str> = acc.split('+').collect();
+    for (sym, names) in [
+        ("⌃", ["Control", "Ctrl"]),
+        ("⌥", ["Alt", "Option"]),
+        ("⇧", ["Shift", "Shift"]),
+        ("⌘", ["CommandOrControl", "Command"]),
+    ] {
+        if parts.iter().any(|p| {
+            names.contains(p) || (sym == "⌘" && (*p == "Cmd" || *p == "Super" || *p == "CmdOrCtrl"))
+        }) {
+            mods.push_str(sym);
+        }
+    }
+    if let Some(last) = parts.last() {
+        key = last
+            .trim_start_matches("Key")
+            .trim_start_matches("Digit")
+            .to_string();
+    }
+    format!("{mods}{key}")
 }

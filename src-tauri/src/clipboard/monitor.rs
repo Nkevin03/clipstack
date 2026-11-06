@@ -240,7 +240,7 @@ pub fn start(app: AppHandle) {
                         .paste_stack
                         .lock()
                         .unwrap_or_else(|e| e.into_inner())
-                        .reset();
+                        .on_unrecorded();
                     continue;
                 }
                 m.last_captured = None;
@@ -251,9 +251,17 @@ pub fn start(app: AppHandle) {
                     .lock()
                     .unwrap_or_else(|e| e.into_inner());
                 match m.last_captured {
-                    Some(id) => stack.on_capture(id, cc),
-                    // Pasteboard changed to something we did not store: no sequence.
-                    None => stack.reset(),
+                    Some(id) => {
+                        let active = stack.is_active();
+                        stack.on_capture(id, cc);
+                        drop(stack);
+                        if active {
+                            crate::paste_stack::emit(&m.app, false);
+                        }
+                        continue;
+                    }
+                    // Pasteboard changed to something we did not store: no swap until the next copy.
+                    None => stack.on_unrecorded(),
                 }
             }
         })
