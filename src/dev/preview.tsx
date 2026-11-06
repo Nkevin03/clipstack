@@ -80,7 +80,7 @@ const tags: Tag[] = [
 ];
 const sourceApps: SourceAppInfo[] = Object.entries(apps).map(([bundleId, a], i) => ({ bundleId, name: a.name, color: a.color, iconPath: a.icon, count: 10 - i, lastSeen: now - i * 1000 }));
 const settings: Settings = {
-  shortcut: "CommandOrControl+Shift+V", pauseShortcut: null, sequenceShortcut: "CommandOrControl+Alt+Shift+C", sequenceOrder: params.get("order") ?? "lastFirst", sequenceCycle: params.get("cycle") === "1", pastePeek: true, pastePeekCount: 3, layout: (params.get("layout") as Settings["layout"]) ?? "top",
+  shortcut: "CommandOrControl+Shift+V", pauseShortcut: null, sequenceShortcut: "CommandOrControl+Alt+Shift+C", sequenceOrder: params.get("order") ?? "lastFirst", sequenceCycle: params.get("cycle") === "1", pastePeek: true, pastePeekCount: 3, layout: (params.get("layout") as Settings["layout"]) ?? "top", cursorPopup: params.get("popup") === "1",
   theme: params.get("theme") ?? "auto", language: params.get("lang") ?? "it", accent: "#6366F1", useSystemAccent: false,
   cardSize: params.get("size") ?? "medium", density: "comfortable", soundOnCopy: false, launchAtLogin: false, autoPaste: true,
   moveToTopAfterPaste: true, multiSeparator: "newline", maxTextBytes: 1048576, maxImageBytes: 26214400, maxItems: 5000,
@@ -136,7 +136,7 @@ if (win === "hud") location.hash = "/hud";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <div style={{ position: win === "hud" ? "relative" : "fixed", width: win === "hud" ? 300 : undefined, margin: win === "hud" ? 12 : undefined, inset: win === "panel" ? 8 : 0, background: win === "panel" ? "rgb(40 40 46 / 0.25)" : undefined, backdropFilter: "blur(30px)", borderRadius: 16 }}>
+    <div style={{ position: win === "hud" ? "relative" : "fixed", width: win === "hud" ? 300 : params.get("popup") === "1" ? 360 : undefined, height: params.get("popup") === "1" ? 480 : undefined, margin: win === "hud" ? 12 : undefined, inset: win === "panel" ? 8 : 0, background: win === "panel" ? "rgb(40 40 46 / 0.25)" : undefined, backdropFilter: "blur(30px)", borderRadius: 16 }}>
       <App />
     </div>
   </React.StrictMode>,
@@ -154,3 +154,16 @@ if (modal) {
 }
 if (params.get("search")) setTimeout(() => useItems.getState().setInput(params.get("search")!), 500);
 if (params.get("multi")) setTimeout(() => useItems.getState().move(2, true), 500);
+if (params.get("debug")) {
+  setTimeout(() => {
+    const out: string[] = [`vw=${window.innerWidth}`];
+    document.querySelectorAll("#root *").forEach((el) => {
+      const r = (el as HTMLElement).getBoundingClientRect();
+      if (r.right > window.innerWidth + 1 && out.length < 25) out.push(`${el.tagName}.${String((el as HTMLElement).className).slice(0, 60)} w=${Math.round(r.width)} right=${Math.round(r.right)}`);
+    });
+    const pre = document.createElement("pre");
+    pre.id = "debug-out";
+    pre.textContent = out.join("\n");
+    document.body.appendChild(pre);
+  }, 1500);
+}

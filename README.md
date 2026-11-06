@@ -46,6 +46,13 @@ Senza permesso l'elemento viene comunque copiato: premi tu ⌘V.
 | `Tab` / `⇧Tab` | Cambia Space |
 | `⌘B` · `⌘,` | Sidebar · Impostazioni |
 
+### Finestrella accanto al cursore (stile Windows)
+
+Impostazioni → Aspetto → **Apri accanto al cursore (stile Windows)**. Con il toggle attivo la scorciatoia apre una
+finestrella compatta (360×480) proprio dove si trova il puntatore, con la ricerca, le schede Cronologia/Fissati/Spaces
+e tutta la cronologia da scorrere in verticale. Tastiera e azioni sono le stesse del pannello (↑↓, Invio, ⌘1…9, Spazio,
+⌘K, menu contestuale…). Se è spento il pannello usa la posizione scelta (Alto/Basso/Centro), che resta la predefinita.
+
 ### Sequenza di copia
 
 1. Premi la scorciatoia (default **⌥⇧⌘C**, modificabile in Impostazioni → Generale → Sequenza di copia), oppure menu bar → *Sequenza di copia*.

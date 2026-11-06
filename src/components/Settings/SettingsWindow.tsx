@@ -209,7 +209,12 @@ function Appearance() {
   return (
     <Section>
       <Field label={t("layout")}>
-        <Segmented label={t("layout")} value={settings.layout} onChange={(v) => set("layout", v)} options={[["top", t("layoutTop")], ["bottom", t("layoutBottom")], ["center", t("layoutCenter")]]} />
+        <div style={{ opacity: settings.cursorPopup ? 0.4 : 1 }}>
+          <Segmented label={t("layout")} value={settings.layout} onChange={(v) => set("layout", v)} options={[["top", t("layoutTop")], ["bottom", t("layoutBottom")], ["center", t("layoutCenter")]]} />
+        </div>
+      </Field>
+      <Field label={t("cursorPopup")} hint={t("cursorPopupHint")}>
+        <Toggle label={t("cursorPopup")} checked={settings.cursorPopup} onChange={(v) => set("cursorPopup", v)} />
       </Field>
       <Field label={t("cardSize")}>
         <Segmented label={t("cardSize")} value={settings.cardSize} onChange={(v) => set("cardSize", v)} options={[["small", t("sizeSmall")], ["medium", t("sizeMedium")], ["large", t("sizeLarge")]]} />

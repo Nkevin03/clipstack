@@ -1,6 +1,9 @@
 import type { Strings } from "./en";
 
 export const it: Strings = {
+  searchShort: "Cerca…",
+  cursorPopup: "Apri accanto al cursore (stile Windows)",
+  cursorPopupHint: "La scorciatoia apre una finestrella compatta proprio dove si trova il puntatore, con tutta la cronologia da scorrere. Se disattivato, il pannello usa la posizione scelta sopra.",
   searchPlaceholder: "Cerca nella cronologia… (type:image, app:safari, tag:lavoro, date:7d)",
   history: "Cronologia",
   pinned: "Fissati",

@@ -64,7 +64,8 @@ export function useKeyboardNav(searchRef: React.RefObject<HTMLInputElement | nul
         actions.pasteIndex(parseInt(key, 10) - 1);
         return;
       }
-      const horizontal = useSettings.getState().settings?.layout !== "center";
+      const st = useSettings.getState().settings;
+      const horizontal = st?.layout !== "center" && !st?.cursorPopup;
       const step = columns();
       const nav: Record<string, number> = horizontal
         ? { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -step, ArrowDown: step }

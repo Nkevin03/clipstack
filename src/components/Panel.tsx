@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { PanelLeftClose, PanelLeftOpen, ShieldAlert } from "lucide-react";
-import { ipc, type Item, type ItemDetail } from "../lib/ipc";
-import { useItems } from "../store/items";
+import { PanelLeftClose, PanelLeftOpen, Pin, ShieldAlert } from "lucide-react";
+import { fileSrc, ipc, type Item, type ItemDetail, type Tag } from "../lib/ipc";
+import { useItems, type SpaceSel } from "../store/items";
 import { useUi } from "../store/ui";
 import { useSettings } from "../store/settings";
 import { useT, useLang } from "../lib/i18n";
@@ -224,6 +224,149 @@ function CenterLayout() {
   );
 }
 
+/** Windows-style popup: space tabs + vertical, variable-height tiles. */
+function SpaceTabs() {
+  const t = useT();
+  const { space, spaces, counts, selectSpace } = useItems();
+  const tabs: { key: string; label: string; sel: SpaceSel; count: number; color?: string | null }[] = [
+    { key: "all", label: t("history"), sel: { type: "all" }, count: counts.all },
+    { key: "pinned", label: t("pinned"), sel: { type: "pinned" }, count: counts.pinned },
+    ...spaces.map((sp) => ({ key: `s${sp.id}`, label: sp.name, sel: { type: "space" as const, id: sp.id }, count: sp.count, color: sp.color })),
+  ];
+  const isSel = (a: SpaceSel) => a.type === space.type && (a.type !== "space" || (space.type === "space" && a.id === space.id));
+  return (
+    <div role="tablist" className="cs-noscrollbar flex shrink-0 gap-1 overflow-x-auto px-3 pb-2">
+      {tabs.map((tb) => (
+        <button
+          key={tb.key}
+          role="tab"
+          aria-selected={isSel(tb.sel)}
+          onClick={() => selectSpace(tb.sel)}
+          className="flex h-6 shrink-0 items-center gap-1.5 rounded-full px-2.5 text-[11.5px] font-medium transition-colors"
+          style={{ background: isSel(tb.sel) ? "var(--cs-accent)" : "var(--cs-field)", color: isSel(tb.sel) ? "var(--cs-accent-text)" : undefined }}
+        >
+          {tb.color && !isSel(tb.sel) && <span className="h-1.5 w-1.5 rounded-full" style={{ background: tb.color }} />}
+          {tb.label}
+          <span className="tabular-nums opacity-60">{tb.count}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function TileBody({ item, terms }: { item: Item; terms: string[] }) {
+  const t = useT();
+  switch (item.kind) {
+    case "image": {
+      const src = item.thumbPath ?? item.imagePath;
+      return src ? <img src={fileSrc(src)} alt="" loading="lazy" draggable={false} className="max-h-[120px] w-full rounded-[8px] object-cover" /> : null;
+    }
+    case "color":
+      return (
+        <div className="flex items-center gap-2">
+          <span className="h-8 w-8 rounded-[8px]" style={{ background: item.preview.trim(), boxShadow: "inset 0 0 0 0.5px var(--cs-border-strong)" }} />
+          <span className="cs-mono text-[12.5px] font-semibold">{item.preview.trim()}</span>
+        </div>
+      );
+    case "file":
+      return (
+        <div className="truncate text-[12.5px] font-medium">
+          <Highlighted text={item.filePaths.map((p) => p.split("/").pop()).join(", ")} terms={terms} />
+        </div>
+      );
+    case "link":
+      return (
+        <div className="min-w-0">
+          {item.linkTitle && <div className="truncate text-[12.5px] font-semibold">{item.linkTitle}</div>}
+          <div className="truncate text-[12px]" style={{ color: "var(--cs-accent)" }}>
+            <Highlighted text={item.preview.trim()} terms={terms} />
+          </div>
+        </div>
+      );
+    case "code":
+      return (
+        <pre className="cs-mono m-0 line-clamp-4 overflow-hidden whitespace-pre rounded-[8px] px-2 py-1.5 text-[10.5px] leading-[1.45]" style={{ background: "var(--cs-code-bg)", color: "var(--cs-code-text)" }}>
+          <Highlighted text={item.preview.split("\n").slice(0, 4).join("\n")} terms={terms} />
+        </pre>
+      );
+    default:
+      return (
+        <div className="line-clamp-3 whitespace-pre-wrap break-words text-[12.5px] leading-[1.4]" aria-label={t(`kind_${item.kind}`)}>
+          <Highlighted text={item.preview.slice(0, 400)} terms={terms} />
+        </div>
+      );
+  }
+}
+
+function Tile({ item, index, selected, inMulti, terms, tags, ...h }: { item: Item; index: number; selected: boolean; inMulti: boolean; terms: string[]; tags: Tag[] } & ReturnType<typeof useCardHandlers>) {
+  const t = useT();
+  const lang = useLang();
+  const itemTags = tags.filter((tg) => item.tagIds.includes(tg.id));
+  return (
+    <div
+      role="option"
+      aria-selected={selected || inMulti}
+      onMouseDown={(e) => e.button === 0 && h.onSelect(index, e)}
+      onDoubleClick={() => h.onActivate(index)}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        h.onContext(index, e);
+      }}
+      draggable
+      onDragStart={(e) => e.dataTransfer.setData("application/x-clipstack-item", String(item.id))}
+      className="mx-2.5 mb-1.5 flex flex-col gap-1.5 rounded-[11px] px-2.5 py-2 transition-shadow"
+      style={{
+        background: "var(--cs-surface)",
+        boxShadow: selected || inMulti ? "0 0 0 2px var(--cs-accent), var(--cs-shadow-card)" : "0 0 0 0.5px var(--cs-border-strong)",
+      }}
+    >
+      <div className="flex items-center gap-1.5 text-[10.5px]" style={{ color: "var(--cs-text-faint)" }}>
+        <AppBadge item={item} size={14} />
+        <span className="truncate font-medium" style={{ color: "var(--cs-text-muted)" }}>{item.sourceAppName ?? t("unknownApp")}</span>
+        <span className="shrink-0">· {timeAgo(item.lastUsedAt, lang)}</span>
+        <span className="flex-1" />
+        {itemTags.slice(0, 3).map((tg) => (
+          <span key={tg.id} title={tg.name} className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: tg.color ?? "var(--cs-accent)" }} />
+        ))}
+        {item.pinned && <Pin size={11} strokeWidth={2.4} className="shrink-0 rotate-45" fill="currentColor" style={{ color: "var(--cs-accent)" }} />}
+        {index < 9 && <span className="shrink-0 rounded-[4px] px-1 text-[9.5px] font-semibold" style={{ background: "var(--cs-field)" }}>⌘{index + 1}</span>}
+      </div>
+      <TileBody item={item} terms={terms} />
+    </div>
+  );
+}
+
+function CompactList() {
+  const { items, index, multi, tags, hasMore, loadMore } = useItems();
+  const terms = useTerms();
+  const handlers = useCardHandlers();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const v = useVirtualizer({ count: items.length, getScrollElement: () => scrollRef.current, estimateSize: () => 84, overscan: 8, paddingStart: 2, paddingEnd: 8 });
+  useEffect(() => {
+    if (items.length) v.scrollToIndex(index, { align: "auto" });
+  }, [index, items.length, v]);
+  const vis = v.getVirtualItems();
+  const last = vis[vis.length - 1];
+  useEffect(() => {
+    if (last && hasMore && last.index >= items.length - 10) void loadMore();
+  }, [last, hasMore, items.length, loadMore]);
+  return (
+    <div ref={scrollRef} role="listbox" aria-multiselectable className="cs-scroll relative min-h-0 flex-1 overflow-y-auto">
+      <div style={{ height: v.getTotalSize(), position: "relative" }}>
+        {vis.map((vi) => {
+          const item = items[vi.index];
+          return (
+            <div key={item.id} data-index={vi.index} ref={v.measureElement} className="absolute left-0 right-0 top-0" style={{ transform: `translateY(${vi.start}px)` }}>
+              <Tile item={item} index={vi.index} selected={vi.index === index && !multi.length} inMulti={multi.includes(item.id)} terms={terms} tags={tags} {...handlers} />
+            </div>
+          );
+        })}
+      </div>
+      <Empty />
+    </div>
+  );
+}
+
 function Modals() {
   const modal = useUi((s) => s.modal);
   return (
@@ -270,6 +413,16 @@ function MultiBar() {
   );
 }
 
+function MultiBarRow() {
+  const multi = useItems((s) => s.multi);
+  if (multi.length < 2) return null;
+  return (
+    <div className="flex shrink-0 justify-end px-3 pb-1.5">
+      <MultiBar />
+    </div>
+  );
+}
+
 export function Panel() {
   const t = useT();
   const settings = useSettings((s) => s.settings);
@@ -299,7 +452,34 @@ export function Panel() {
     useItems.setState({ input: "", chips: [], multi: [], anchor: null });
   });
 
-  const from = reduced ? { opacity: 0 } : layout === "top" ? { opacity: 0, y: -18 } : layout === "bottom" ? { opacity: 0, y: 18 } : { opacity: 0, scale: 0.97 };
+  const popup = settings?.cursorPopup ?? false;
+  const from = reduced ? { opacity: 0 } : popup ? { opacity: 0, scale: 0.94 } : layout === "top" ? { opacity: 0, y: -18 } : layout === "bottom" ? { opacity: 0, y: 18 } : { opacity: 0, scale: 0.97 };
+
+  if (popup) {
+    return (
+      <motion.div
+        key={visibleTick}
+        initial={from}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: "spring", stiffness: 560, damping: 38, mass: 0.7 }}
+        className="relative flex h-full w-full flex-col overflow-hidden"
+        style={{ borderRadius: "var(--cs-radius-panel)", background: "var(--cs-panel-tint)", boxShadow: "inset 0 0 0 1px var(--cs-panel-border)", transformOrigin: "top left" }}
+      >
+        <header className="flex h-[48px] shrink-0 items-center gap-1.5 px-2.5">
+          <SearchBar ref={searchRef} compact />
+          <TypeMenu />
+          <SettingsButton />
+        </header>
+        <SpaceTabs />
+        <PermissionBanner />
+        <MultiBarRow />
+        <CompactList />
+        <Modals />
+        <ContextMenu />
+        <Toasts />
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div

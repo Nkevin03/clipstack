@@ -34,7 +34,7 @@ Profilazione misurata (MacBook Apple Silicon, `--release`, 50.000 elementi):
 `pnpm dev`, poi apri `http://localhost:1420/preview.html` con parametri:
 `layout=top|bottom|center`, `theme=light|dark`, `lang=it|en`, `size=small|medium|large`,
 `sidebar=0`, `paused=1`, `ax=0` (banner permesso), `modal=context|tags|actions|preview|toast`,
-`window=settings&section=privacy`, `window=onboarding`, `window=hud&seq=0..5&seqdone=1`.
+`window=settings&section=privacy`, `window=onboarding`, `window=hud&seq=0..5&seqdone=1`, `popup=1` (finestrella stile Windows).
 
 ## Checklist manuale
 
@@ -54,6 +54,12 @@ con l'app installata va dato a **Clipstack.app**.
 - [ ] `⌘1`…`⌘9` incollano la n-esima card.
 - [ ] `⇧→` ×2 poi `Invio` incolla 3 elementi uniti col separatore scelto.
 - [ ] Immagine e file: incollati come immagine / come file (Finder, Mail, Slack).
+
+### Finestrella accanto al cursore
+- [ ] Impostazioni → Aspetto → "Apri accanto al cursore": la scorciatoia apre la finestrella accanto al puntatore, sullo schermo del puntatore.
+- [ ] Con il puntatore vicino al bordo destro/inferiore la finestrella si apre a sinistra/sopra, sempre intera.
+- [ ] Scroll fino in fondo alla cronologia (carica altri elementi), ↑↓ + Invio incolla nell'app sotto, schede Spaces, ricerca, ⌘K, menu contestuale.
+- [ ] Toggle spento: torna il pannello Alto/Basso/Centro scelto.
 
 ### Sequenza di copia
 - [ ] ⌥⇧⌘C: compare il mini-pannello in alto a destra ("Copia qualcosa…"), il focus resta nell'app corrente.

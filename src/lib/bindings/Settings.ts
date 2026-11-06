@@ -20,6 +20,10 @@ sequenceCycle: boolean,
  */
 pastePeek: boolean, pastePeekCount: number, layout: Layout, 
 /**
+ * Windows-style: open a compact history popup next to the mouse cursor.
+ */
+cursorPopup: boolean, 
+/**
  * "auto" | "light" | "dark"
  */
 theme: string, 

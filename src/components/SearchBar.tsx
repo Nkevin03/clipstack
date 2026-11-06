@@ -4,7 +4,7 @@ import { useItems } from "../store/items";
 import { chipLabel } from "../lib/search-syntax";
 import { useT } from "../lib/i18n";
 
-export const SearchBar = forwardRef<HTMLInputElement>(function SearchBar(_, ref) {
+export const SearchBar = forwardRef<HTMLInputElement, { compact?: boolean }>(function SearchBar({ compact }, ref) {
   const t = useT();
   const { input, chips, setInput, removeChip, clearSearch } = useItems();
   return (
@@ -33,12 +33,12 @@ export const SearchBar = forwardRef<HTMLInputElement>(function SearchBar(_, ref)
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onBlur={(e) => e.target.value !== input || setInput(e.target.value, true)}
-        placeholder={chips.length ? "" : t("searchPlaceholder")}
+        placeholder={chips.length ? "" : compact ? t("searchShort") : t("searchPlaceholder")}
         aria-label={t("searchPlaceholder")}
         spellCheck={false}
         autoCorrect="off"
         autoCapitalize="off"
-        className="h-full min-w-[80px] flex-1 bg-transparent text-[13px] outline-none placeholder:text-[var(--cs-text-faint)]"
+        className="h-full min-w-[60px] flex-1 bg-transparent text-[13px] outline-none placeholder:text-[var(--cs-text-faint)]"
       />
       {(input || chips.length > 0) && (
         <button aria-label="Clear" onClick={clearSearch} className="shrink-0 rounded-full p-0.5" style={{ color: "var(--cs-text-faint)" }}>

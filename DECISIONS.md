@@ -87,3 +87,9 @@ Una riga per scelta non specificata nel brief: **scelta** — motivo.
 - **× su ogni riga = toglie dalla sequenza, non dalla cronologia.** Se era quello di turno, il successivo viene messo subito negli appunti. La × è sempre visibile (attenuata) perché i pannelli che non diventano key non ricevono l'hover in modo affidabile.
 - **Ordine/ciclo cambiati a sequenza aperta si applicano subito.**
 - **Finestrella dopo l'incolla: stesso HUD della sequenza (una sola WebView), 5 s, ultimi N (1–20, default 3) dalla cronologia.** Click = incolla quell'elemento con ⌘V sintetico; i ⌘V generati da Clipstack non riaprono la finestrella (finestra di soppressione di 0,9 s). Durante una sequenza la finestrella non compare (c'è già il pannello della sequenza).
+
+## Finestrella accanto al cursore (richiesta successiva)
+- **Toggle `cursorPopup` (default spento) che ha la precedenza sui tre layout**, invece di un quarto layout: così la grafica predefinita resta quella scelta e la modalità Windows si accende/spegne senza perdere la preferenza Alto/Basso/Centro.
+- **Posizione accanto al puntatore del mouse, non al cursore di testo**: macOS non espone in modo affidabile la posizione del cursore di testo di tutte le app (servirebbe l'API di Accessibilità per ogni campo, spesso assente in Chrome/Electron).
+- **360×480 pt, 10 pt sotto/destra del puntatore; si ribalta sopra/a sinistra vicino ai bordi e resta nell'area visibile dello schermo del puntatore.**
+- **Contenuto compatto: ricerca + filtro tipi + impostazioni, schede degli Spaces, lista verticale virtualizzata con altezza variabile (scroll infinito su tutta la cronologia)**; navigazione ↑↓; stessi modali e menu del pannello.

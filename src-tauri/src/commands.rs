@@ -384,7 +384,7 @@ pub fn set_setting(
         let _ = crate::shortcuts::register_all(&app);
         return Err(e);
     }
-    if matches!(key.as_str(), "layout" | "cardSize") {
+    if matches!(key.as_str(), "layout" | "cardSize" | "cursorPopup") {
         crate::panel::relayout(&app);
     }
     if key == "sequenceShortcut" {

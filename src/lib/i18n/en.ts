@@ -1,5 +1,8 @@
 export const en = {
   // panel
+  searchShort: "Search…",
+  cursorPopup: "Open next to the mouse pointer (Windows style)",
+  cursorPopupHint: "The shortcut opens a compact window right where your pointer is, with the whole history to scroll through. When off, the panel uses the position chosen above.",
   searchPlaceholder: "Search history… (type:image, app:safari, tag:work, date:7d)",
   history: "History",
   pinned: "Pinned",

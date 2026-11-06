@@ -41,6 +41,8 @@ pub struct Settings {
     pub paste_peek: bool,
     pub paste_peek_count: i64,
     pub layout: Layout,
+    /// Windows-style: open a compact history popup next to the mouse cursor.
+    pub cursor_popup: bool,
     /// "auto" | "light" | "dark"
     pub theme: String,
     /// "auto" | "it" | "en"
@@ -82,6 +84,7 @@ impl Default for Settings {
             paste_peek: false,
             paste_peek_count: 3,
             layout: Layout::Top,
+            cursor_popup: false,
             theme: "auto".into(),
             language: "auto".into(),
             accent: "#6366F1".into(),

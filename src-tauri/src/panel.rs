@@ -131,6 +131,39 @@ pub fn frame_for(layout: Layout, visible: NSRect, s: &Settings) -> NSRect {
     }
 }
 
+pub const POPUP_W: f64 = 360.0;
+pub const POPUP_H: f64 = 480.0;
+const POPUP_GAP: f64 = 10.0;
+
+/// Windows-style popup next to the mouse (Cocoa coordinates): below-right of the cursor,
+/// flipped above/left when it would leave the visible screen area.
+pub fn popup_frame(mouse: NSPoint, visible: NSRect) -> NSRect {
+    let (w, h) = (
+        POPUP_W.min(visible.size.width - 2.0 * MARGIN),
+        POPUP_H.min(visible.size.height - 2.0 * MARGIN),
+    );
+    let min_x = visible.origin.x + MARGIN;
+    let max_x = visible.origin.x + visible.size.width - MARGIN - w;
+    let min_y = visible.origin.y + MARGIN;
+    let max_y = visible.origin.y + visible.size.height - MARGIN - h;
+    let mut x = mouse.x + POPUP_GAP;
+    if x > max_x {
+        x = mouse.x - POPUP_GAP - w;
+    }
+    // Below the cursor (y grows upwards in Cocoa), otherwise above it.
+    let mut y = mouse.y - POPUP_GAP - h;
+    if y < min_y {
+        y = mouse.y + POPUP_GAP;
+    }
+    NSRect::new(
+        NSPoint::new(
+            x.clamp(min_x, max_x.max(min_x)),
+            y.clamp(min_y, max_y.max(min_y)),
+        ),
+        NSSize::new(w, h),
+    )
+}
+
 /// Visible frame of the screen containing the mouse cursor.
 fn cursor_screen_visible(mtm: MainThreadMarker) -> Option<NSRect> {
     let mouse = NSEvent::mouseLocation();
@@ -175,7 +208,11 @@ pub fn show(app: &AppHandle) {
         }
         let settings = state.settings();
         if let Some(visible) = cursor_screen_visible(mtm) {
-            let frame = frame_for(settings.layout, visible, &settings);
+            let frame = if settings.cursor_popup {
+                popup_frame(NSEvent::mouseLocation(), visible)
+            } else {
+                frame_for(settings.layout, visible, &settings)
+            };
             panel.as_panel().setFrame_display(frame, true);
         }
         state.panel_visible.store(true, Ordering::SeqCst);
@@ -245,6 +282,30 @@ mod tests {
         let c = frame_for(Layout::Center, screen(), &s);
         assert!(c.size.width <= 900.0 && c.origin.x > 0.0);
         assert!(c.origin.y + c.size.height <= 25.0 + 850.0);
+    }
+
+    #[test]
+    fn popup_follows_cursor_and_stays_on_screen() {
+        let v = screen(); // x 0..1440, y 25..875
+        let f = popup_frame(NSPoint::new(400.0, 700.0), v);
+        assert_eq!(
+            (f.origin.x, f.origin.y + f.size.height),
+            (410.0, 690.0),
+            "below-right of the cursor"
+        );
+        let f = popup_frame(NSPoint::new(1400.0, 700.0), v);
+        assert_eq!(
+            f.origin.x + f.size.width,
+            1390.0,
+            "flipped to the left near the right edge"
+        );
+        let f = popup_frame(NSPoint::new(400.0, 100.0), v);
+        assert_eq!(f.origin.y, 110.0, "flipped above near the bottom");
+        let f = popup_frame(NSPoint::new(-50.0, 2000.0), v);
+        assert!(
+            f.origin.x >= 8.0 && f.origin.y + f.size.height <= 875.0 - 8.0 + 0.001,
+            "clamped"
+        );
     }
 
     #[test]
