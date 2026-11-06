@@ -1,0 +1,4 @@
+[env]
+# ts-rs: emit TypeScript bindings into the frontend and map i64 to `number`.
+TS_RS_EXPORT_DIR = { value = "../src/lib/bindings", relative = true }
+TS_RS_LARGE_INT = "number"
