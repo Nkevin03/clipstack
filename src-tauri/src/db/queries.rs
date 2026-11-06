@@ -292,8 +292,9 @@ pub fn fts_query(text: &str) -> Option<String> {
 }
 
 pub fn get_items(conn: &Connection, q: &ItemQuery) -> Res<Vec<Item>> {
+    // Page over ids first (index-only), then fetch display columns for that page only.
     let mut sql =
-        format!("SELECT {LIST_COLS} {LIST_FROM} WHERE (i.expires_at IS NULL OR i.expires_at > ?)");
+        String::from("SELECT i.id FROM items i WHERE (i.expires_at IS NULL OR i.expires_at > ?)");
     let mut args: Vec<Value> = vec![Value::Integer(now_ms())];
 
     let text = q.text.trim();
@@ -346,13 +347,18 @@ pub fn get_items(conn: &Connection, q: &ItemQuery) -> Res<Vec<Item>> {
         sql.push_str(" AND i.last_used_at >= ?");
         args.push(Value::Integer(since));
     }
-    sql.push_str(match q.sort {
+    let order = match q.sort {
         Sort::Recent => " ORDER BY i.last_used_at DESC, i.id DESC",
-        Sort::MostUsed => " ORDER BY i.use_count DESC, i.last_used_at DESC",
-        Sort::PinnedFirst => " ORDER BY i.pinned DESC, i.last_used_at DESC",
-    });
+        Sort::MostUsed => " ORDER BY i.use_count DESC, i.last_used_at DESC, i.id DESC",
+        Sort::PinnedFirst => " ORDER BY i.pinned DESC, i.last_used_at DESC, i.id DESC",
+    };
+    sql.push_str(order);
     let limit = if q.limit <= 0 { 60 } else { q.limit.min(500) };
     sql.push_str(" LIMIT ? OFFSET ?");
+    let sql = format!(
+        "SELECT {LIST_COLS} FROM ({sql}) page JOIN items i ON i.id = page.id {}{order}",
+        &LIST_FROM["FROM items i ".len()..]
+    );
     args.push(Value::Integer(limit));
     args.push(Value::Integer(q.offset.max(0)));
 
@@ -1033,5 +1039,77 @@ mod tests {
         let elapsed = t.elapsed();
         assert!(!r.is_empty());
         assert!(elapsed.as_millis() < 50, "search took {elapsed:?}");
+    }
+
+    /// Profiling with 50k items (BRIEF §7 phase 7). Run with `cargo test --release -- --ignored`.
+    #[test]
+    #[ignore]
+    fn profile_50k() {
+        let c = open_memory();
+        c.execute_batch("BEGIN").unwrap();
+        let words = [
+            "riunione", "fattura", "progetto", "caffè", "deploy", "password", "milano", "report",
+            "design", "codice",
+        ];
+        for i in 0..50_000i64 {
+            let w = words[(i as usize) % words.len()];
+            let t = format!(
+                "{w} numero {i} lorem ipsum dolor sit amet consectetur {} {}",
+                i * 13,
+                words[(i as usize * 7) % words.len()]
+            );
+            upsert_capture(&c, &text_item(&t), i).unwrap();
+        }
+        c.execute_batch("COMMIT").unwrap();
+        for (label, q) in [
+            (
+                "recent page",
+                ItemQuery {
+                    limit: 60,
+                    ..Default::default()
+                },
+            ),
+            (
+                "fts word",
+                ItemQuery {
+                    text: "caffe".into(),
+                    limit: 60,
+                    ..Default::default()
+                },
+            ),
+            (
+                "fts prefix",
+                ItemQuery {
+                    text: "prog 4999".into(),
+                    limit: 60,
+                    ..Default::default()
+                },
+            ),
+            (
+                "deep page",
+                ItemQuery {
+                    offset: 40_000,
+                    limit: 60,
+                    ..Default::default()
+                },
+            ),
+            (
+                "app filter",
+                ItemQuery {
+                    app_names: vec!["saf".into()],
+                    limit: 60,
+                    ..Default::default()
+                },
+            ),
+        ] {
+            let t = std::time::Instant::now();
+            let r = get_items(&c, &q).unwrap();
+            let ms = t.elapsed().as_secs_f64() * 1000.0;
+            println!("{label:12} {ms:7.2} ms  ({} rows)", r.len());
+            assert!(ms < 50.0, "{label} took {ms} ms");
+        }
+        let t = std::time::Instant::now();
+        cleanup(&c, 50_000, 5000, 0).unwrap();
+        println!("cleanup→5000 {:7.2} ms", t.elapsed().as_secs_f64() * 1000.0);
     }
 }

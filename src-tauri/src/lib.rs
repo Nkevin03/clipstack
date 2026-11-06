@@ -60,12 +60,38 @@ fn start_maintenance(state: Arc<AppState>, app: tauri::AppHandle) {
         .expect("spawn maintenance thread");
 }
 
+/// stderr in development; `~/Library/Logs/Clipstack/clipstack.log` (rotated at 2 MB) in release.
+fn init_logging() {
+    let mut b = env_logger::Builder::from_env(
+        env_logger::Env::default().default_filter_or("clipstack_lib=info"),
+    );
+    if !cfg!(debug_assertions)
+        && let Some(home) = std::env::var_os("HOME")
+    {
+        let dir = std::path::Path::new(&home).join("Library/Logs/Clipstack");
+        let _ = std::fs::create_dir_all(&dir);
+        let path = dir.join("clipstack.log");
+        if std::fs::metadata(&path)
+            .map(|m| m.len() > 2 * 1024 * 1024)
+            .unwrap_or(false)
+        {
+            let _ = std::fs::rename(&path, dir.join("clipstack.old.log"));
+        }
+        if let Ok(f) = std::fs::OpenOptions::new()
+            .create(true)
+            .append(true)
+            .open(&path)
+        {
+            b.target(env_logger::Target::Pipe(Box::new(f)));
+        }
+    }
+    b.init();
+    std::panic::set_hook(Box::new(|info| log::error!("panic: {info}")));
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    env_logger::Builder::from_env(
-        env_logger::Env::default().default_filter_or("clipstack_lib=info"),
-    )
-    .init();
+    init_logging();
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
