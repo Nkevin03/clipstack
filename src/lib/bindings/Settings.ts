@@ -6,7 +6,19 @@ export type Settings = { shortcut: string, pauseShortcut: string | null,
 /**
  * Starts/stops a copy sequence (copy A, B, C → ⌘V ⌘V ⌘V pastes C, B, A).
  */
-sequenceShortcut: string | null, layout: Layout, 
+sequenceShortcut: string | null, 
+/**
+ * "lastFirst" (C, B, A) | "firstFirst" (A, B, C)
+ */
+sequenceOrder: string, 
+/**
+ * Loop over the sequence instead of consuming it.
+ */
+sequenceCycle: boolean, 
+/**
+ * After every ⌘V show a small window with the last `paste_peek_count` copies.
+ */
+pastePeek: boolean, pastePeekCount: number, layout: Layout, 
 /**
  * "auto" | "light" | "dark"
  */

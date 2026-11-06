@@ -79,3 +79,11 @@ Una riga per scelta non specificata nel brief: **scelta** — motivo.
 - **La WebView del HUD viene creata al primo uso e poi solo nascosta** (apertura istantanea le volte successive; ~30 MB in più solo dopo il primo utilizzo).
 - **Se manca l'Accessibilità all'avvio della sessione: richiesta di sistema + avviso nel HUD; il monitor ⌘V si installa appena il permesso arriva.**
 - **`CLIPSTACK_START_SEQUENCE=1` avvia una sessione all'avvio solo nelle build di debug** (verifica del HUD).
+
+## Ordine, ciclo, rimozione e finestrella dopo l'incolla (richiesta successiva)
+- **Ordine `lastFirst` (default) / `firstFirst`.** Con `firstFirst` Clipstack rimette subito negli appunti l'elemento di turno dopo ogni copia (altrimenti il primo ⌘V incollerebbe l'ultima copia): la copia resta comunque salvata nella cronologia e nella sequenza.
+- **Ciclo**: un cursore avanza sugli elementi senza consumarli e riparte dall'inizio; la sessione termina solo con scorciatoia/×/menu. Con `lastFirst` + ciclo una nuova copia diventa subito la prossima; con `firstFirst` il cursore resta dov'è.
+- **Il mini-pannello mostra sempre gli elementi nell'ordine in cui verranno incollati, partendo da quello di turno** (in ciclo la lista è ruotata).
+- **× su ogni riga = toglie dalla sequenza, non dalla cronologia.** Se era quello di turno, il successivo viene messo subito negli appunti. La × è sempre visibile (attenuata) perché i pannelli che non diventano key non ricevono l'hover in modo affidabile.
+- **Ordine/ciclo cambiati a sequenza aperta si applicano subito.**
+- **Finestrella dopo l'incolla: stesso HUD della sequenza (una sola WebView), 5 s, ultimi N (1–20, default 3) dalla cronologia.** Click = incolla quell'elemento con ⌘V sintetico; i ⌘V generati da Clipstack non riaprono la finestrella (finestra di soppressione di 0,9 s). Durante una sequenza la finestrella non compare (c'è già il pannello della sequenza).

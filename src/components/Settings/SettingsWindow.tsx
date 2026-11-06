@@ -107,6 +107,25 @@ function General() {
           <Select label={t("separator")} value={settings.multiSeparator} onChange={(v) => set("multiSeparator", v)} options={[["newline", t("sepNewline")], ["space", t("sepSpace")], ["comma", t("sepComma")], ["none", t("sepNone")]]} />
         </Field>
       </Section>
+      <Section title={t("seqSection")} hint={t("sequenceHint")}>
+        <Field label={t("sequenceShortcut")}>
+          <ShortcutRecorder value={settings.sequenceShortcut} allowClear onChange={(v) => set("sequenceShortcut", v)} />
+        </Field>
+        <Field label={t("seqOrder")}>
+          <Segmented label={t("seqOrder")} value={settings.sequenceOrder} onChange={(v) => set("sequenceOrder", v)} options={[["lastFirst", t("seqOrderLast")], ["firstFirst", t("seqOrderFirst")]]} />
+        </Field>
+        <Field label={t("seqCycle")} hint={t("seqCycleHint")}>
+          <Toggle label={t("seqCycle")} checked={settings.sequenceCycle} onChange={(v) => set("sequenceCycle", v)} />
+        </Field>
+      </Section>
+      <Section title={t("peekSection")} hint={t("peekHint2")}>
+        <Field label={t("peekToggle")}>
+          <Toggle label={t("peekToggle")} checked={settings.pastePeek} onChange={(v) => set("pastePeek", v)} />
+        </Field>
+        <Field label={t("peekCount")}>
+          <NumberInput label={t("peekCount")} value={settings.pastePeekCount} min={1} max={20} onChange={(v) => set("pastePeekCount", v)} suffix={t("items")} />
+        </Field>
+      </Section>
       <AccessibilityRow />
     </>
   );

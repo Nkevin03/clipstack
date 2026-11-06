@@ -33,6 +33,13 @@ pub struct Settings {
     pub pause_shortcut: Option<String>,
     /// Starts/stops a copy sequence (copy A, B, C → ⌘V ⌘V ⌘V pastes C, B, A).
     pub sequence_shortcut: Option<String>,
+    /// "lastFirst" (C, B, A) | "firstFirst" (A, B, C)
+    pub sequence_order: String,
+    /// Loop over the sequence instead of consuming it.
+    pub sequence_cycle: bool,
+    /// After every ⌘V show a small window with the last `paste_peek_count` copies.
+    pub paste_peek: bool,
+    pub paste_peek_count: i64,
     pub layout: Layout,
     /// "auto" | "light" | "dark"
     pub theme: String,
@@ -70,6 +77,10 @@ impl Default for Settings {
             shortcut: "CommandOrControl+Shift+V".into(),
             pause_shortcut: None,
             sequence_shortcut: Some("CommandOrControl+Alt+Shift+C".into()),
+            sequence_order: "lastFirst".into(),
+            sequence_cycle: false,
+            paste_peek: false,
+            paste_peek_count: 3,
             layout: Layout::Top,
             theme: "auto".into(),
             language: "auto".into(),

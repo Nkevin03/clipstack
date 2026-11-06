@@ -62,7 +62,12 @@ con l'app installata va dato a **Clipstack.app**.
 - [ ] Durante la sequenza copia "a", incolla, copia "b": "b" va in cima, poi ⌘V incolla "b" e poi il resto.
 - [ ] Copia una password da un password manager durante la sequenza: ⌘V incolla la password, la pila resta invariata.
 - [ ] ⌥⇧⌘C di nuovo (o la ×, o la voce in menu bar) termina la sequenza; fuori sequenza ⌘V ripetuto incolla sempre lo stesso elemento.
-- [ ] Cambia la scorciatoia in Impostazioni → Scorciatoie: la nuova funziona e compare nel menu bar e nel mini-pannello.
+- [ ] Ordine "Prima il primo copiato": copia uno, due, tre → ⌘V ⌘V ⌘V → "unoduetre".
+- [ ] "A ciclo" attivo: ⌘V ×6 → uno due tre uno due tre; la sequenza resta aperta.
+- [ ] × su una riga la toglie; se era la prossima (⌘V), il ⌘V successivo incolla quella dopo.
+- [ ] Cambia ordine o ciclo a sequenza aperta: il mini-pannello si riordina subito.
+- [ ] "Mostra gli ultimi copiati dopo ogni ⌘V" attivo, numero 5: dopo un ⌘V compare la finestrella con 5 elementi per 5 s; click su una riga la incolla al posto della precedente (annulla con ⌘Z nell'app se serve).
+- [ ] Cambia la scorciatoia in Impostazioni → Generale: la nuova funziona e compare nel menu bar e nel mini-pannello.
 
 ### App a schermo intero, Spaces, più monitor
 - [ ] Safari a schermo intero: il pannello compare sopra l'app.

@@ -184,6 +184,7 @@ fn finish(app: &AppHandle, state: &AppState) -> PasteOutcome {
             needs_permission: true,
         };
     }
+    crate::paste_stack::suppress_peek();
     std::thread::spawn(|| {
         // Let the panel order out and the target app's window become key again.
         std::thread::sleep(Duration::from_millis(70));

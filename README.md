@@ -48,13 +48,19 @@ Senza permesso l'elemento viene comunque copiato: premi tu ⌘V.
 
 ### Sequenza di copia
 
-1. Premi **⌥⇧⌘C** (modificabile in Impostazioni → Scorciatoie, oppure dalla menu bar → *Sequenza di copia*).
-2. In alto a destra compare un piccolo pannello: ogni cosa che copi si impila lì in diretta.
-3. In qualsiasi app premi **⌘V** più volte: incolla l'ultima copia, poi la penultima, poi la terzultima…
-   l'elemento incollato sparisce dalla pila.
-4. Quando la pila è vuota la sequenza si chiude da sola; altrimenti premi di nuovo la scorciatoia o la ×.
+1. Premi la scorciatoia (default **⌥⇧⌘C**, modificabile in Impostazioni → Generale → Sequenza di copia), oppure menu bar → *Sequenza di copia*.
+2. In alto a destra compare un piccolo pannello: ogni cosa che copi si impila lì in diretta. La riga evidenziata (⌘V) è la prossima che verrà incollata; la **×** su ogni riga la toglie dalla sequenza (resta nella cronologia).
+3. In qualsiasi app premi **⌘V** più volte. Opzioni:
+   - **Ordine di incolla**: *prima l'ultimo copiato* (tre, due, uno) o *prima il primo copiato* (uno, due, tre);
+   - **A ciclo**: gli elementi non vengono consumati e si ricomincia dall'inizio (uno, due, tre, uno, due, tre…).
+4. Senza ciclo la sequenza si chiude da sola quando è vuota; altrimenti premi di nuovo la scorciatoia o la ×.
 
-Richiede il permesso Accessibilità (per accorgersi dei tuoi ⌘V). Fuori dalla sequenza ⌘V funziona normalmente.
+### Finestrella dopo l'incolla
+
+Opzione in Impostazioni → Generale → *Dopo l'incolla*: dopo ogni ⌘V compare per 5 secondi un mini-pannello con gli ultimi
+N copiati (N impostabile, default 3). Clicca una riga per incollarla al posto di quella appena incollata.
+
+Entrambe le funzioni richiedono il permesso Accessibilità (per accorgersi dei tuoi ⌘V).
 
 Filtri nella barra di ricerca: `type:image|link|text|rich|file|color|code`, `app:safari`,
 `tag:lavoro`, `space:snippets`, `date:today|yesterday|7d|24h|2w`, `pinned:yes|no`

@@ -137,6 +137,9 @@ pub fn run() {
                 log::error!("{e}");
             }
             clipboard::monitor::start(handle.clone());
+            if state.settings().paste_peek {
+                paste_stack::ensure_monitor(handle.clone());
+            }
             start_maintenance(state, handle.clone());
             if !onboarding_done {
                 windows::open_onboarding(&handle);
@@ -211,6 +214,10 @@ pub fn run() {
             commands::stop_sequence,
             commands::sequence_state,
             commands::resize_hud,
+            commands::sequence_remove,
+            commands::peek_state,
+            commands::peek_paste,
+            commands::hide_peek,
         ])
         .build(tauri::generate_context!())
         .expect("error while building Clipstack")

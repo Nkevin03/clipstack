@@ -245,23 +245,10 @@ pub fn start(app: AppHandle) {
                 }
                 m.last_captured = None;
                 m.handle_change();
-                let mut stack = m
-                    .state
-                    .paste_stack
-                    .lock()
-                    .unwrap_or_else(|e| e.into_inner());
                 match m.last_captured {
-                    Some(id) => {
-                        let active = stack.is_active();
-                        stack.on_capture(id, cc);
-                        drop(stack);
-                        if active {
-                            crate::paste_stack::emit(&m.app, false);
-                        }
-                        continue;
-                    }
+                    Some(id) => crate::paste_stack::after_capture(&m.app, id, cc),
                     // Pasteboard changed to something we did not store: no swap until the next copy.
-                    None => stack.on_unrecorded(),
+                    None => crate::paste_stack::lock(&m.state).on_unrecorded(),
                 }
             }
         })

@@ -3,10 +3,10 @@ import type { Item } from "./Item";
 
 export type SequenceState = { active: boolean, 
 /**
- * Newest first: `items[0]` is pasted by the next ⌘V.
+ * Upcoming pastes: `items[0]` is pasted by the next ⌘V.
  */
 items: Array<Item>, pasted: number, 
 /**
  * The session just ended because everything was pasted.
  */
-finished: boolean, accessibility: boolean, };
+finished: boolean, accessibility: boolean, cycle: boolean, lastFirst: boolean, };

@@ -80,7 +80,7 @@ const tags: Tag[] = [
 ];
 const sourceApps: SourceAppInfo[] = Object.entries(apps).map(([bundleId, a], i) => ({ bundleId, name: a.name, color: a.color, iconPath: a.icon, count: 10 - i, lastSeen: now - i * 1000 }));
 const settings: Settings = {
-  shortcut: "CommandOrControl+Shift+V", pauseShortcut: null, sequenceShortcut: "CommandOrControl+Alt+Shift+C", layout: (params.get("layout") as Settings["layout"]) ?? "top",
+  shortcut: "CommandOrControl+Shift+V", pauseShortcut: null, sequenceShortcut: "CommandOrControl+Alt+Shift+C", sequenceOrder: params.get("order") ?? "lastFirst", sequenceCycle: params.get("cycle") === "1", pastePeek: true, pastePeekCount: 3, layout: (params.get("layout") as Settings["layout"]) ?? "top",
   theme: params.get("theme") ?? "auto", language: params.get("lang") ?? "it", accent: "#6366F1", useSystemAccent: false,
   cardSize: params.get("size") ?? "medium", density: "comfortable", soundOnCopy: false, launchAtLogin: false, autoPaste: true,
   moveToTopAfterPaste: true, multiSeparator: "newline", maxTextBytes: 1048576, maxImageBytes: 26214400, maxItems: 5000,
@@ -114,9 +114,10 @@ mockIPC(
       case "list_excluded_apps": return [{ bundleId: "com.1password.1password", name: "1Password" }, { bundleId: "com.bitwarden.desktop", name: "Bitwarden" }];
       case "app_info": return { version: "0.1.0", dataDir: "~/Library/Application Support/com.clipstack.app", encrypted: false, accessibility: true, systemLanguage: "it" };
       case "file_icon": return null;
+      case "peek_state": return { visible: params.get("peek") === "1", items: items.slice(0, Number(params.get("n") ?? 3)) };
       case "sequence_state": {
         const n = Number(params.get("seq") ?? 3);
-        return { active: true, items: n < 0 ? [] : [items[0], items[4], items[3], items[2], items[7]].slice(0, n), pasted: 0, finished: params.get("seqdone") === "1", accessibility: params.get("ax") !== "0" };
+        return { items: n < 0 ? [] : [items[0], items[4], items[3], items[2], items[7]].slice(0, n), pasted: 0, finished: params.get("seqdone") === "1", accessibility: params.get("ax") !== "0", cycle: params.get("cycle") === "1", lastFirst: params.get("order") !== "firstFirst", active: params.get("peek") !== "1" };
       }
       case "run_action": return { text: String(items[2].preview).toUpperCase(), stats: { chars: 120, charsNoSpaces: 98, words: 20, lines: 7 }, newItemId: null };
       default: return null;

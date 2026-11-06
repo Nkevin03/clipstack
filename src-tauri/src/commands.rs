@@ -390,6 +390,12 @@ pub fn set_setting(
     if key == "sequenceShortcut" {
         crate::tray::refresh(&app);
     }
+    if matches!(
+        key.as_str(),
+        "sequenceOrder" | "sequenceCycle" | "pastePeek"
+    ) {
+        crate::paste_stack::reconfigure(&app);
+    }
     if key == "language" {
         crate::tray::refresh(&app);
     }
@@ -617,6 +623,28 @@ pub fn stop_sequence(app: AppHandle) {
 #[tauri::command]
 pub fn sequence_state(state: St) -> crate::paste_stack::SequenceState {
     crate::paste_stack::snapshot(&state, false)
+}
+
+#[tauri::command]
+pub fn sequence_remove(app: AppHandle, id: i64) {
+    crate::paste_stack::remove_item(&app, id);
+}
+
+#[tauri::command]
+pub fn peek_state(state: St) -> crate::paste_stack::PeekState {
+    crate::paste_stack::peek_state(&state)
+}
+
+/// Click on an item of the paste peek: paste it in place of what was just pasted.
+#[tauri::command]
+pub fn peek_paste(app: AppHandle, id: i64) -> Cmd<PasteOutcome> {
+    crate::paste_stack::hide_peek(&app);
+    paste::paste_ids(&app, &[id], false).map_err(err)
+}
+
+#[tauri::command]
+pub fn hide_peek(app: AppHandle) {
+    crate::paste_stack::hide_peek(&app);
 }
 
 #[tauri::command]
