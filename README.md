@@ -116,25 +116,6 @@ mkdir -p /tmp/dmgsrc && cp -R $B/macos/Clipstack.app /tmp/dmgsrc/ && ln -sf /App
 hdiutil create -volname Clipstack -srcfolder /tmp/dmgsrc -ov -format UDZO $B/dmg/Clipstack_0.1.0_universal.dmg
 ```
 
-### Firma Developer ID e notarizzazione (opzionale, per distribuire)
-
-Serve un account Apple Developer (99 €/anno).
-
-1. Crea un certificato **Developer ID Application** e installalo nel Portachiavi.
-2. In `src-tauri/tauri.conf.json` imposta `bundle.macOS.signingIdentity` a
-   `"Developer ID Application: Nome Cognome (TEAMID)"` (al posto di `"-"`).
-3. Esporta le credenziali per la notarizzazione e ricompila:
-   ```bash
-   export APPLE_ID="tu@example.com"
-   export APPLE_PASSWORD="app-specific-password"   # appleid.apple.com → Password per app
-   export APPLE_TEAM_ID="TEAMID"
-   pnpm tauri build --target universal-apple-darwin
-   ```
-   Tauri firma con hardened runtime, invia a notarizzazione e allega il ticket (`stapler`).
-4. Verifica: `spctl -a -vv /path/Clipstack.app` → `source=Notarized Developer ID`.
-
-Con un Developer ID stabile il permesso Accessibilità resta valido anche dopo gli aggiornamenti.
-
 ## Struttura
 
 Vedi `BRIEF.md` (specifica), `DECISIONS.md` (scelte e limiti noti), `TESTING.md` (test e checklist).
